@@ -1,5 +1,5 @@
-import Entity from "./Entity"
-import Component from "./Component"
+import Entity from './Entity'
+import Component from './Component'
 
 const MAX_ID = 999999
 
@@ -23,35 +23,39 @@ class EntityManager {
     return entity
   }
 
+  getComponents(entity: Entity): Component[] {
+    return this._entitiesMap.get(entity) || []
+  }
+
   addComponent(component: Component, entity: Entity) {
-    if (!this._entitiesMap.has(entity)) throw Error("entity not found")
+    if (!this._entitiesMap.has(entity)) throw Error('entity not found')
 
     const components = <Component[]>this._entitiesMap.get(entity)
     this._entitiesMap.set(entity, [...components, component])
   }
 
-  getComponentOfClass(
-    componentClass: typeof Component,
-    entity: Entity
-  ): Component | undefined {
-    if (!this._entitiesMap.has(entity)) throw Error("entity not found")
+  getComponentOfClass<T>(
+    componentClass: typeof T,
+    entity: Entity,
+  ): T | undefined {
+    if (!this._entitiesMap.has(entity)) throw Error('entity not found')
 
     const components = this._entitiesMap.get(entity)
 
-    return components?.find((c) => c instanceof componentClass)
+    return <T>components?.find(c => c instanceof componentClass)
   }
 
   removeEntity(entity: Entity) {
     this._entitiesMap.delete(entity)
   }
 
-  getAllEntitiesPosessingComponentOfClass(
-    componentClass: typeof Component
+  getAllEntitiesPosessingComponentOfClass<T>(
+    componentClass: typeof T,
   ): Entity[] {
     const entities = Array.from(this._entitiesMap.keys())
 
     return entities.reduce((arr: Entity[], e: Entity) => {
-      const component = this.getComponentOfClass(componentClass, e)
+      const component = this.getComponentOfClass<T>(componentClass, e)
 
       if (component) return [...arr, e]
       return arr

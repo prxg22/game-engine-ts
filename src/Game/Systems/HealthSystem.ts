@@ -1,29 +1,30 @@
-import System from "../core/System"
-import HealthComponent from "./HealthComponent"
-import RenderComponent from "./RenderComponent"
+import System from '../../Core/System'
+import HealthComponent from '../Components/HealthComponent'
+import RenderComponent from '../Components/RenderComponent'
 
 class HealthSystem extends System {
   update() {
     const entities = this.entityManager.getAllEntitiesPosessingComponentOfClass(
-      HealthComponent
+      HealthComponent,
     )
 
-    entities.forEach((entity) => {
+    entities.forEach(entity => {
       const health = <HealthComponent>(
         this.entityManager.getComponentOfClass(HealthComponent, entity)
       )
 
       if (!health.alive) this.entityManager.removeEntity(entity)
-      health.alive = health.currentHp <= 0
+
+      health.alive = health.currentHp > 0
     })
   }
 
   render(dt: number) {
     const entities = this.entityManager.getAllEntitiesPosessingComponentOfClass(
-      HealthComponent
+      HealthComponent,
     )
 
-    entities.forEach((entity) => {
+    entities.forEach(entity => {
       const health = <HealthComponent>(
         this.entityManager.getComponentOfClass(HealthComponent, entity)
       )
@@ -38,10 +39,12 @@ class HealthSystem extends System {
         return
       }
 
-      render.node.active = true
       if (health.node) {
         health.node.active = true
-        health.node.setPosition(render.node.x, render.node.y - 10)
+        health.node.setPosition(
+          render.node.x - render.node.width / 2,
+          render.node.y - render.node.height / 2 - 20,
+        )
         health.node.text = `${health.currentHp}/${health.maxHp}`
         health.node.updateText()
       }

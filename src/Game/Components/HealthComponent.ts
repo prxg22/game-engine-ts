@@ -1,5 +1,5 @@
-import Phaser from "phaser"
-import Component from "../core/Component"
+import Phaser from 'phaser'
+import Component from '../../Core/Component'
 
 class HealthComponent implements Component {
   alive: boolean = true
@@ -7,7 +7,7 @@ class HealthComponent implements Component {
   constructor(
     public currentHp: number = 100,
     public maxHp: number = 100,
-    public node?: Phaser.GameObjects.Text
+    public node?: Phaser.GameObjects.Text,
   ) {}
 }
 
