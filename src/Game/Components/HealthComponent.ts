@@ -1,14 +1,25 @@
-import Phaser from 'phaser'
-import Component from '../../Core/Component'
+class HealthComponent {
+  private _current
 
-class HealthComponent implements Component {
-  alive: boolean = true
+  constructor(public max: number, current: number = max) {
+    this._current = current
+  }
 
-  constructor(
-    public currentHp: number = 100,
-    public maxHp: number = 100,
-    public node?: Phaser.GameObjects.Text,
-  ) {}
+  set current(n: number) {
+    this._current = Math.min(Math.max(n, 0), this.max)
+  }
+
+  get current(): number {
+    return this._current
+  }
+
+  hit(n: number) {
+    this.current -= Math.max(n, 0)
+  }
+
+  recover(n: number) {
+    this.current += Math.max(n, 0)
+  }
 }
 
 export default HealthComponent
