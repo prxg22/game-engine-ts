@@ -1,4 +1,4 @@
-import { Entity, EntityManager } from '../../Core'
+import { Entity, EntityManager } from '../../../Core'
 import CardDescriptorComponent, {
   CardDescriptor
 } from '../Components/CardDescriptorComponent'

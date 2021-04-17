@@ -1,8 +1,9 @@
-import { Component, Entity, EntityManager } from '../../Core'
+import { Component, Entity, EntityManager } from '../../../Core'
 import { CardDescriptor } from '../Components/CardDescriptorComponent'
 import DeckComponent from '../Components/DeckComponent'
 import { PlayerDeckRendererComponent } from '../Components/DeckRendererComponent'
 import HandComponent from '../Components/HandComponent'
+import HandRendererComponent from '../Components/HandRendererComponent'
 import HealthComponent from '../Components/HealthComponent'
 import ManaComponent from '../Components/ManaComponent'
 import ManaRendererComponent from '../Components/ManaRendererComponent'
@@ -34,13 +35,22 @@ export const create = (
   addComponent(new ManaComponent(MAX_MANA))
   addComponent(new HandComponent())
   addComponent(new DeckComponent(cards))
-  addComponent(
-    new PlayerDeckRendererComponent(
-      scene.add.rectangle(),
-      scene.add.rectangle()
-    )
-  )
-  addComponent(new ManaRendererComponent(scene.add.text(0, 0, '')))
+  // addComponent(
+  //   new PlayerDeckRendererComponent(
+  //     scene.add.rectangle(),
+  //     scene.add.rectangle()
+  //   )
+  // )
+  // addComponent(new ManaRendererComponent(scene.add.text(0, 0, '')))
+  // addComponent(
+  //   new HandRendererComponent([
+  //     scene.add.rectangle(),
+  //     scene.add.rectangle(),
+  //     scene.add.rectangle(),
+  //     scene.add.rectangle(),
+  //     scene.add.rectangle()
+  //   ])
+  // )
 
   return player
 }

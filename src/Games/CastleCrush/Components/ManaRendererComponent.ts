@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { Component } from '../../Core'
+import { Component } from '../../../Core'
 import { MAX_MANA, MIN_MANA } from './ManaComponent'
 
 class ManaRendererComponent implements Component {

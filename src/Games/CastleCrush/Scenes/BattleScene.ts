@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 import Cards from '../Cards'
-import { Entity, EntityManager, System } from '../../Core'
+import { Entity, EntityManager, System } from '../../../Core'
 import { create } from '../Factories/PlayerFactory'
 import ManaSystem from '../Systems/ManaSystem'
 import DrawSystem from '../Systems/DrawSystem'
@@ -46,7 +46,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   update(dt: number) {
-    if (dt >= 15000) {
+    if (dt >= 30000) {
       this.game.destroy(false)
       return
     }

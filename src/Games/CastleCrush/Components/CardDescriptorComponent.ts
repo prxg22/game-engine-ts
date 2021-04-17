@@ -1,4 +1,4 @@
-import { Component } from '../../Core'
+import { Component } from '../../../Core'
 
 export enum TYPES {
   CREATURE

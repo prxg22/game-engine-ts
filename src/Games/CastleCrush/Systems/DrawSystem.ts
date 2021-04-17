@@ -1,4 +1,4 @@
-import { Entity, System } from '../../Core'
+import { Entity, System } from '../../../Core'
 import DeckComponent, { DECK_STATUS } from '../Components/DeckComponent'
 import DeckRendererComponent, {
   PlayerDeckRendererComponent
@@ -48,7 +48,7 @@ class DrawSystem extends System {
         return
       }
 
-      if (!(tick % 3) || !deck) return
+      if (!(tick % 10) || !deck) return
 
       const hand = this.entityManager.getComponentOfClass<HandComponent>(
         HandComponent,

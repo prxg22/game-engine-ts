@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import BattleScene from './Game/Scenes/BattleScene'
+import BattleScene from './Scenes/BattleScene'
 
 new Phaser.Game({
   type: Phaser.AUTO,

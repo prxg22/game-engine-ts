@@ -1,4 +1,4 @@
-import { Component, Entity } from '../../Core'
+import { Component, Entity } from '../../../Core'
 
 const HAND_MAX_CARD = 5
 class HandComponent implements Component {

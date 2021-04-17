@@ -1,4 +1,4 @@
-import { System } from '../../Core'
+import { System } from '../../../Core'
 import ManaComponent from '../Components/ManaComponent'
 
 class ManaSystem extends System {
@@ -16,12 +16,11 @@ class ManaSystem extends System {
 
       if (!mana) return
 
-      mana.increment()
-      if (tick - this.lastTick < mana.max) {
-        return
+      if (!(tick % 3)) mana.increment()
+      if (tick - this.lastTick >= mana.max) {
+        this.lastTick = tick
+        mana.incrementMax()
       }
-      this.lastTick = tick
-      mana.incrementMax()
     })
   }
 }

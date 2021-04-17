@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import { Component } from '../../Core'
+import { Component } from '../../../Core'
 import { DECK_STATUS } from './DeckComponent'
 
 abstract class DeckRendererComponent implements Component {
@@ -24,23 +24,23 @@ export class PlayerDeckRendererComponent extends DeckRendererComponent {
   ) {
     super(deckNode, cardNode)
     this.deckNode.setDisplaySize(30, 45)
-    this.deckNode.setPosition(700, 500)
+    this.deckNode.setPosition(600, 500)
     this.deckNode.setFillStyle(0x33ff00)
     this.deckNode.setStrokeStyle(2, 0x33ff00)
 
     // this.cardNode.visible = false
-    this.cardNode.setPosition(700, 500)
+    this.cardNode.setPosition(600, 500)
     this.cardNode.setDisplaySize(30, 45)
     this.cardNode.setFillStyle(0xff3300)
   }
 
   renderStatus(status: DECK_STATUS) {
     switch (status) {
-      case DECK_STATUS.DRAWING_CARD:
-        this.cardNode.visible = true
-        this.cardNode.setFillStyle(0xffff00)
-        this.cardNode.setPosition(this.cardNode.x - 1, this.cardNode.y)
-        break
+      // case DECK_STATUS.DRAWING_CARD:
+      //   this.cardNode.visible = true
+      //   this.cardNode.setFillStyle(0xffff00)
+      //   this.cardNode.setPosition(this.cardNode.x - 1.3, this.cardNode.y)
+      //   break
       case DECK_STATUS.DROPPING_CARD:
         this.cardNode.visible = true
         this.cardNode.setFillStyle(0xffff00)

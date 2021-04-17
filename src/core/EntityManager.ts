@@ -3,6 +3,10 @@ import Component from './Component'
 
 const MAX_ID = 999999
 
+interface IComponent {
+  new (...args: any[]): Component
+}
+
 class EntityManager {
   private _entitiesMap: Map<Entity, Component[]> = new Map()
   private _nextEntity: Entity = 1
@@ -30,27 +34,27 @@ class EntityManager {
   addComponent(component: Component, entity: Entity) {
     if (!this._entitiesMap.has(entity)) throw Error('entity not found')
 
-    const components = <Component[]>this._entitiesMap.get(entity)
+    const components = this._entitiesMap.get(entity) || []
     this._entitiesMap.set(entity, [...components, component])
   }
 
-  getComponentOfClass<T>(
-    componentClass: typeof T,
-    entity: Entity,
+  getComponentOfClass<T extends Component>(
+    componentClass: IComponent,
+    entity: Entity
   ): T | undefined {
     if (!this._entitiesMap.has(entity)) throw Error('entity not found')
 
     const components = this._entitiesMap.get(entity)
 
-    return <T>components?.find(c => c instanceof componentClass)
+    return components?.find((c) => c instanceof componentClass) as T
   }
 
   removeEntity(entity: Entity) {
     this._entitiesMap.delete(entity)
   }
 
-  getAllEntitiesPosessingComponentOfClass<T>(
-    componentClass: typeof T,
+  getAllEntitiesPosessingComponentOfClass<T extends Component>(
+    componentClass: IComponent
   ): Entity[] {
     const entities = Array.from(this._entitiesMap.keys())
 

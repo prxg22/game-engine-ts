@@ -1,4 +1,4 @@
-import { Component, Entity } from '../../Core'
+import { Component, Entity } from '../../../Core'
 
 export enum DECK_STATUS {
   INITIAL,
