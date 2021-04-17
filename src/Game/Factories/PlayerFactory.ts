@@ -5,6 +5,7 @@ import { PlayerDeckRendererComponent } from '../Components/DeckRendererComponent
 import HandComponent from '../Components/HandComponent'
 import HealthComponent from '../Components/HealthComponent'
 import ManaComponent from '../Components/ManaComponent'
+import ManaRendererComponent from '../Components/ManaRendererComponent'
 import * as CardFactory from './CardFactory'
 
 const MAX_MANA = 12
@@ -16,8 +17,7 @@ interface PlayerDescription {
 export const create = (
   descriptor: PlayerDescription,
   entityManager: EntityManager,
-  deckShape: Phaser.GameObjects.Shape,
-  cardShape: Phaser.GameObjects.Shape
+  scene: Phaser.Scene
 ) => {
   const { hp, cards: cardsDescriptors } = descriptor
 
@@ -26,16 +26,21 @@ export const create = (
     entityManager.addComponent(component, player)
   }
 
-  addComponent(new HealthComponent(hp))
-  addComponent(new ManaComponent(MAX_MANA))
-
   const cards = cardsDescriptors.map((cardDescriptor) =>
     CardFactory.create(cardDescriptor, entityManager)
   )
 
-  addComponent(new DeckComponent(cards))
-  addComponent(new PlayerDeckRendererComponent(deckShape, cardShape))
+  addComponent(new HealthComponent(hp))
+  addComponent(new ManaComponent(MAX_MANA))
   addComponent(new HandComponent())
+  addComponent(new DeckComponent(cards))
+  addComponent(
+    new PlayerDeckRendererComponent(
+      scene.add.rectangle(),
+      scene.add.rectangle()
+    )
+  )
+  addComponent(new ManaRendererComponent(scene.add.text(0, 0, '')))
 
   return player
 }

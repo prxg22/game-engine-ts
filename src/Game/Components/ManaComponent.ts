@@ -1,7 +1,7 @@
 import { Component } from '../../Core'
 
-const MIN_MANA = 0
-const MAX_MANA = 12
+export const MIN_MANA = 0
+export const MAX_MANA = 12
 
 class ManaComponent implements Component {
   private _current: number

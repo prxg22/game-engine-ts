@@ -37,12 +37,7 @@ class BattleScene extends Phaser.Scene {
   }
 
   create() {
-    this.human = create(
-      player,
-      this.entityManager,
-      this.add.rectangle(),
-      this.add.rectangle()
-    )
+    this.human = create(player, this.entityManager, this)
     this.systems.forEach((s) => s.create())
   }
 
