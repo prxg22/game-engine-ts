@@ -53,17 +53,17 @@ class EntityManager {
     this._entitiesMap.set(entity, [...components, component])
   }
 
-  getComponentOfClass<T extends Component>(
+  getComponentOfClass(
     componentClass: IComponent,
     key: Entity | string
-  ): T | undefined {
+  ): Component | undefined {
     let entity: Entity = key as Entity
     if (typeof key === 'string') entity = this._tagsMap.get(key) as Entity
     if (!this._entitiesMap.has(entity)) throw Error('entity not found')
 
     const components = this._entitiesMap.get(entity)
 
-    return components?.find((c) => c instanceof componentClass) as T
+    return components?.find((c) => c instanceof componentClass)
   }
 
   removeEntity(key: Entity | string) {
