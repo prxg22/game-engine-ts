@@ -9,7 +9,7 @@ import {
   GRID_SIZE,
   MAX_X,
   MAX_Y,
-  WHITE
+  NEUTRAL
 } from '../constants'
 
 export default class RenderSystem extends System {
@@ -36,7 +36,7 @@ export default class RenderSystem extends System {
       if (!spatial || !renderable) return
 
       if (alive && !alive.isAlive) {
-        renderable.sprite.setFillStyle(WHITE)
+        renderable.sprite.setFillStyle(NEUTRAL)
         return
       }
 

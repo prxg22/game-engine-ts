@@ -8,10 +8,10 @@ import {
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
   GRID_SIZE,
-  RED,
-  GREEN,
-  BLUE,
-  WHITE,
+  APPLE_COLOR,
+  SNAKE_COLOR,
+  FRAME_COLOR,
+  NEUTRAL,
   KEY_UP,
   KEY_DOWN,
   KEY_LEFT,
@@ -66,7 +66,7 @@ export default class Factory {
           position.y * GRID_SIZE,
           GRID_SIZE,
           GRID_SIZE,
-          GREEN
+          SNAKE_COLOR
         )
       ),
       snake
@@ -99,7 +99,7 @@ export default class Factory {
           position.y * GRID_SIZE,
           GRID_SIZE,
           GRID_SIZE,
-          RED
+          APPLE_COLOR
         )
       ),
       apple
@@ -123,7 +123,7 @@ export default class Factory {
           y * GRID_SIZE,
           GRID_SIZE,
           GRID_SIZE,
-          GREEN
+          SNAKE_COLOR
         )
       ),
       bodyPart
@@ -139,7 +139,7 @@ export default class Factory {
       CANVAS_WIDTH - GRID_SIZE,
       CANVAS_HEIGHT - GRID_SIZE
     )
-    frame?.setStrokeStyle(GRID_SIZE, BLUE, 1)
+    frame?.setStrokeStyle(GRID_SIZE, FRAME_COLOR, 1)
   }
 
   static get factory(): Factory {

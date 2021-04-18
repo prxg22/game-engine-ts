@@ -18,7 +18,7 @@ class MainScene extends Scene {
   create() {
     this.text = this.add.text(CANVAS_WIDTH + 16, 0, '', {
       fontSize: '10px',
-      color: 'white'
+      color: '#fff'
     })
     this.factory = new Factory(this.entityManager, this.add, this.input)
     this.systems = [
