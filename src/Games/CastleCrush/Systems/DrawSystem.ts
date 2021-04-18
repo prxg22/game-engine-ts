@@ -7,15 +7,15 @@ import HandComponent from '../Components/HandComponent'
 
 class DrawSystem extends System {
   get entitiesWithDeckComponent(): Entity[] {
-    return this.entityManager.getAllEntitiesPosessingComponentOfClass<DeckComponent>(
+    return this.entityManager.getAllEntitiesPosessingComponentOfClasses([
       DeckComponent
-    )
+    ])
   }
 
   get entitiesWithDeckRendererComponent(): Entity[] {
-    return this.entityManager.getAllEntitiesPosessingComponentOfClass<DeckComponent>(
+    return this.entityManager.getAllEntitiesPosessingComponentOfClasses([
       DeckRendererComponent
-    )
+    ])
   }
 
   create() {

@@ -2,7 +2,7 @@ import Phaser from 'phaser'
 import { Component } from '../../../Core'
 import { DECK_STATUS } from './DeckComponent'
 
-abstract class DeckRendererComponent implements Component {
+class DeckRendererComponent extends Component {
   public deckNode: Phaser.GameObjects.Shape
   public cardNode: Phaser.GameObjects.Shape
 
@@ -10,11 +10,12 @@ abstract class DeckRendererComponent implements Component {
     deckNode: Phaser.GameObjects.Shape,
     cardNode: Phaser.GameObjects.Shape
   ) {
+    super()
     this.deckNode = deckNode
     this.cardNode = cardNode
   }
 
-  abstract renderStatus(status: DECK_STATUS): void
+  renderStatus(status: DECK_STATUS): void {}
 }
 
 export class PlayerDeckRendererComponent extends DeckRendererComponent {

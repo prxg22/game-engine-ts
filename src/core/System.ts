@@ -8,9 +8,9 @@ abstract class System {
     public inputPlugin: Phaser.Input.InputPlugin
   ) {}
 
-  abstract update(dt: number): void
+  abstract update(dt?: number): void
   create(): void {}
-  render(dt: number): void {}
+  render(dt?: number): void {}
 }
 
 export default System

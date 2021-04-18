@@ -6,12 +6,13 @@ export enum DECK_STATUS {
   DROPPING_CARD
 }
 
-class DeckComponent implements Component {
+class DeckComponent extends Component {
   status: DECK_STATUS
   private current: number = 0
   private _cards: Entity[]
 
   constructor(cards: Entity[]) {
+    super()
     this._cards = cards
     this.status = DECK_STATUS.INITIAL
   }

@@ -1,8 +1,10 @@
 import { Component, Entity } from '../../../Core'
 
 const HAND_MAX_CARD = 5
-class HandComponent implements Component {
-  constructor(public cards: Entity[] = []) {}
+class HandComponent extends Component {
+  constructor(public cards: Entity[] = []) {
+    super()
+  }
 
   get full() {
     return this.cards.length >= HAND_MAX_CARD

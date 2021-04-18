@@ -73,8 +73,8 @@ class StageRenderSystem extends System {
   }
 
   render() {
-    const entities = this.entityManager.getAllEntitiesPosessingComponentOfClass(
-      DeckRendererComponent
+    const entities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [DeckRendererComponent, HandComponent, ManaComponent]
     )
 
     entities.forEach((entity) => {

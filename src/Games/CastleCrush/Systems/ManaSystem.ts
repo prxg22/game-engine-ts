@@ -4,8 +4,8 @@ import ManaComponent from '../Components/ManaComponent'
 class ManaSystem extends System {
   private lastTick: number = 0
   update(tick: number) {
-    const players = this.entityManager.getAllEntitiesPosessingComponentOfClass<ManaComponent>(
-      ManaComponent
+    const players = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [ManaComponent]
     )
 
     players.forEach((player) => {

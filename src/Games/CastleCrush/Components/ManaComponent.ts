@@ -3,11 +3,12 @@ import { Component } from '../../../Core'
 export const MIN_MANA = 0
 export const MAX_MANA = 12
 
-class ManaComponent implements Component {
+class ManaComponent extends Component {
   private _current: number
   private _max: number
 
   constructor(max: number, current: number = 0) {
+    super()
     this._current = current >= MIN_MANA ? current : 0
     this._max = max >= MIN_MANA ? current : 0
   }
