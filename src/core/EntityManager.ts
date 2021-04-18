@@ -16,7 +16,7 @@ class EntityManager {
   private _nextEntity: Entity = 1
 
   generateUniqueEntity(): Entity {
-    if (this._nextEntity < MAX_ID) return this._nextEntity++
+    if (this._nextEntity < MAX_ID) return ++this._nextEntity
 
     for (let i = 1; i < MAX_ID; i++) {
       if (!this._entitiesMap.has(i)) return i

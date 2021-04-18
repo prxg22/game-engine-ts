@@ -34,13 +34,14 @@ class RenderingSystem extends System {
     )
 
     engineEntities.forEach((entity) => {
-      const engine = this.entityManager.getComponentOfClass<Engine>(
+      const engine = this.entityManager.getComponentOfClass(
         Engine,
         entity
-      )
-      const renderable = this.entityManager.getComponentOfClass<
-        Renderable<GameObjects.Sprite>
-      >(Renderable, entity)
+      ) as Engine
+      const renderable = this.entityManager.getComponentOfClass(
+        Renderable,
+        entity
+      ) as Renderable<GameObjects.Sprite>
 
       if (!engine || !renderable) return
     })

@@ -1,13 +1,15 @@
 import { GameObjects } from 'phaser'
 import { System } from '../../../Core'
 import Renderable from '..//Components/Renderable'
+import Alive from '../Components/Alive'
 import Spatial from '../Components/Spatial'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   GRID_SIZE,
   MAX_X,
-  MAX_Y
+  MAX_Y,
+  WHITE
 } from '../constants'
 
 export default class RenderSystem extends System {
@@ -15,7 +17,7 @@ export default class RenderSystem extends System {
   update() {}
   render(dt: number) {
     const spatialAndRenderableEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
-      [Spatial]
+      [Spatial, Renderable]
     )
 
     spatialAndRenderableEntities.forEach((e) => {
@@ -29,7 +31,14 @@ export default class RenderSystem extends System {
         e
       ) as Renderable<GameObjects.Shape>
 
+      const alive = this.entityManager.getComponentOfClass(Alive, e) as Alive
+
       if (!spatial || !renderable) return
+
+      if (alive && !alive.isAlive) {
+        renderable.sprite.setFillStyle(WHITE)
+        return
+      }
 
       renderable.sprite.setPosition(
         spatial.x * GRID_SIZE,

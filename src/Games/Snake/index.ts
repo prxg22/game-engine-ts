@@ -5,10 +5,10 @@ import MainScene from './Scenes/MainScene'
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'content',
-  // width: CANVAS_WIDTH,
-  width: CANVAS_WIDTH + 300,
+  width: CANVAS_WIDTH,
   height: CANVAS_HEIGHT,
-  // height: CANVAS_HEIGHT,
+  // width: CANVAS_WIDTH + 300,
+  // height: CANVAS_HEIGHT + 800,
   physics: {
     default: 'arcade'
   },

@@ -18,6 +18,8 @@ abstract class Scene extends Phaser.Scene {
   update(dt?: number, time?: number) {
     this.systems.forEach((s) => {
       s.update(dt)
+    })
+    this.systems.forEach((s) => {
       s.render(dt)
     })
   }

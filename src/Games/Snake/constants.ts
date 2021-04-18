@@ -1,4 +1,4 @@
-export const TICK = 300
+export const TICK = 100000
 
 // dimensions
 export const GRID_SIZE = 8

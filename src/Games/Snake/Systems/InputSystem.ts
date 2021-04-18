@@ -1,15 +1,12 @@
 import { Entity, System } from '../../../Core'
+import Alive from '../Components/Alive'
 import Input from '../Components/Input'
 import Spatial from '../Components/Spatial'
 import { KEY_UP, KEY_RIGHT, KEY_LEFT, KEY_DOWN, TICK } from '../constants'
+import TickSystem from './TickSystem'
 
 const VELOCITY = 1
 
-const DIRECTIONS = {
-  NONE: 0,
-  POSITIVE: VELOCITY,
-  NEGATIVE: -VELOCITY
-}
 export default class InputSystem extends System {
   inputManager: Map<Entity, Phaser.Input.Keyboard.Key | undefined> = new Map()
   time: number = 0
@@ -20,6 +17,13 @@ export default class InputSystem extends System {
     )
 
     inputAndSpatialEntities.forEach((entity) => {
+      const alive = this.entityManager.getComponentOfClass(
+        Alive,
+        entity
+      ) as Alive
+
+      if (alive && !alive.isAlive) return
+
       // stores mapped keys which are down before tick
       const input = this.entityManager.getComponentOfClass(
         Input,
@@ -32,39 +36,38 @@ export default class InputSystem extends System {
       )
 
       this.time += dt
-      if (this.time < TICK) return
+      if (this.time < TickSystem.tick) return
       this.time = 0
-      // flushes inputManager key after tick
-      // do whatever it has to do with inputs
       const spatial = this.entityManager.getComponentOfClass(
         Spatial,
         entity
       ) as Spatial
 
       const key = this.inputManager.get(entity)
+      // flushes inputManager key after tick
       this.inputManager.set(entity, undefined)
       if (!key) return
 
       switch (key.keyCode) {
         case KEY_UP:
-          if (spatial.dy === DIRECTIONS.POSITIVE) return
-          spatial.dx = DIRECTIONS.NONE
-          spatial.dy = DIRECTIONS.NEGATIVE
+          if (spatial.dy === VELOCITY) return
+          spatial.dx = 0
+          spatial.dy = -VELOCITY
           break
         case KEY_DOWN:
-          if (spatial.dy === DIRECTIONS.NEGATIVE) return
-          spatial.dx = DIRECTIONS.NONE
-          spatial.dy = DIRECTIONS.POSITIVE
+          if (spatial.dy === -VELOCITY) return
+          spatial.dx = 0
+          spatial.dy = VELOCITY
           break
         case KEY_RIGHT:
-          if (spatial.dx === DIRECTIONS.NEGATIVE) return
-          spatial.dx = DIRECTIONS.POSITIVE
-          spatial.dy = DIRECTIONS.NONE
+          if (spatial.dx === -VELOCITY) return
+          spatial.dx = VELOCITY
+          spatial.dy = 0
           break
         case KEY_LEFT:
-          if (spatial.dx === DIRECTIONS.POSITIVE) return
-          spatial.dx = DIRECTIONS.NEGATIVE
-          spatial.dy = DIRECTIONS.NONE
+          if (spatial.dx === VELOCITY) return
+          spatial.dx = -VELOCITY
+          spatial.dy = 0
           break
       }
     })

@@ -19,7 +19,8 @@ import {
   MAX_X,
   MAX_Y
 } from '../constants'
-import Collidebale from '../Components/Collideable'
+import Collidable from '../Components/Collidable'
+import Alive from '../Components/Alive'
 
 let instance: Factory
 export default class Factory {
@@ -41,6 +42,7 @@ export default class Factory {
       x: Phaser.Math.Between(1, MAX_X - 1),
       y: Phaser.Math.Between(1, MAX_Y - 1)
     }
+
     const snake = this.entityManager.createEntity('snake')
 
     const keys = [
@@ -52,9 +54,9 @@ export default class Factory {
 
     this.entityManager?.addComponent(new Input(keys), snake)
     this.entityManager?.addComponent(new EntityCollection(), snake)
-    this.entityManager?.addComponent(new Collidebale(), snake)
+    this.entityManager?.addComponent(new Collidable(), snake)
     this.entityManager?.addComponent(
-      new Spatial(position.x, position.y, 1, 0),
+      new Spatial(position.x, position.y, 0, 0),
       snake
     )
     this.entityManager?.addComponent(
@@ -70,6 +72,7 @@ export default class Factory {
       snake
     )
 
+    this.entityManager.addComponent(new Alive(), snake)
     return snake
   }
 
@@ -82,7 +85,7 @@ export default class Factory {
       y: Phaser.Math.Between(1, MAX_Y - 1)
     }
     const apple = this.entityManager?.createEntity('apple')
-    this.entityManager?.addComponent(new Collidebale(), apple)
+    this.entityManager?.addComponent(new Collidable(), apple)
 
     this.entityManager?.addComponent(
       new Spatial(position.x, position.y, 0, 0),
@@ -103,6 +106,30 @@ export default class Factory {
     )
 
     return apple
+  }
+
+  bodyPart(x: number, y: number): Entity | undefined {
+    if (!this.input || !this.entityManager || !this.factory)
+      throw Error('Factory must have entityManager, input and factory')
+    const bodyPart = this.entityManager.createEntity() as Entity
+
+    this.entityManager.addComponent(new Alive(), bodyPart)
+    this.entityManager.addComponent(new Collidable(), bodyPart)
+    this.entityManager?.addComponent(new Spatial(x, y, 0, 0), bodyPart)
+    this.entityManager?.addComponent(
+      new Renderable(
+        this.factory.rectangle(
+          x * GRID_SIZE,
+          y * GRID_SIZE,
+          GRID_SIZE,
+          GRID_SIZE,
+          GREEN
+        )
+      ),
+      bodyPart
+    )
+
+    return bodyPart
   }
 
   frame() {
