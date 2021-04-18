@@ -6,12 +6,13 @@ import Renderable from '../Components/Renderable'
 import SpatialState from '../Components/SpatialState'
 
 class RenderingSystem extends System {
-  update(delta: number) {
-    const spatialEntities = this.entityManager.getAllEntitiesPosessingComponentOfClass<SpatialState>(
-      SpatialState
+  update() {}
+  render(delta: number) {
+    const spatialEntitiesAndRenderable = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [SpatialState, Renderable]
     )
 
-    spatialEntities.forEach((entity) => {
+    spatialEntitiesAndRenderable.forEach((entity) => {
       const spatial = this.entityManager.getComponentOfClass<SpatialState>(
         SpatialState,
         entity
@@ -28,8 +29,8 @@ class RenderingSystem extends System {
       renderable.sprite.setRotation(renderable.rotation)
     })
 
-    const engineEntities = this.entityManager.getAllEntitiesPosessingComponentOfClass<Engine>(
-      Engine
+    const engineEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Engine]
     )
 
     engineEntities.forEach((entity) => {
@@ -41,10 +42,7 @@ class RenderingSystem extends System {
         Renderable<GameObjects.Sprite>
       >(Renderable, entity)
 
-      if (!engineEntities || !renderable) return
-
-      if (engine?.on) renderable.sprite.setFrame(1)
-      else renderable.sprite.setFrame(0)
+      if (!engine || !renderable) return
     })
   }
 }

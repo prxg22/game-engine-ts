@@ -12,7 +12,7 @@ export const createPlayer = (
   factory: Phaser.GameObjects.GameObjectFactory,
   input: Phaser.Input.InputPlugin
 ): Entity => {
-  const player = entityManager.createEntity()
+  const player = entityManager.createEntity('player')
   const [x, y] = [400, 300]
   const sprite = factory.sprite(x, y, 'ship')
   const keys = [
@@ -22,9 +22,12 @@ export const createPlayer = (
   ]
 
   entityManager.addComponent(new SpatialState(x, y, 0, 0), player)
-  entityManager.addComponent(new Engine(0.000001), player)
+  entityManager.addComponent(new Engine(0.01), player)
   entityManager.addComponent(new Fuel(20000), player)
-  entityManager.addComponent(new Renderable(sprite), player)
+  entityManager.addComponent(
+    new Renderable<Phaser.GameObjects.Sprite>(sprite, 1, 0),
+    player
+  )
   entityManager.addComponent(new GravitySensitive(), player)
   entityManager.addComponent(new Motion(), player)
   entityManager.addComponent(new Input(keys), player)

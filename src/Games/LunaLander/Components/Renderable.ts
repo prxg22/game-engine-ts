@@ -9,6 +9,8 @@ class Renderable<
     public rotation: number = 0
   ) {
     super()
+    this.sprite.setRotation(rotation)
+    this.sprite.setScale(scale)
   }
 
   rotate(amount: number) {

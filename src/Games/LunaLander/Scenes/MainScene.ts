@@ -1,6 +1,8 @@
-import Phaser from 'phaser'
+import Phaser, { GameObjects } from 'phaser'
 import { Component, Entity, EntityManager, Scene, System } from '../../../Core'
 import images from '../Assets/Images/*.png'
+import Engine from '../Components/Engine'
+import Renderable from '../Components/Renderable'
 import { createPlayer } from '../Factory'
 import EngineSystem from '../Systems/EngineSystem'
 import InputSystem from '../Systems/InputSystem'
@@ -27,10 +29,18 @@ class MainScene extends Scene {
 
     this.systems = [
       new InputSystem(this.entityManager, this.add, this.input),
-      new PhysicsSystem(this.entityManager, this.add, this.input),
       new EngineSystem(this.entityManager, this.add, this.input),
+      new PhysicsSystem(this.entityManager, this.add, this.input),
       new RenderingSystem(this.entityManager, this.add, this.input)
     ]
+
+    const engine = this.entityManager.getComponentOfClass<Engine>(
+      Engine,
+      this.player
+    )
+    const render = this.entityManager.getComponentOfClass<
+      Renderable<GameObjects.Sprite>
+    >(Renderable, this.player)
 
     this.debug = this.add.text(
       0,
@@ -40,7 +50,8 @@ class MainScene extends Scene {
     )
   }
 
-  update(dt: number) {
+  update(time: number, dt: number) {
+    if (time >= 60000) return
     const player = this.entityManager.getComponents(this.player || 0)
 
     this.debug?.setText(debugComponents(player))

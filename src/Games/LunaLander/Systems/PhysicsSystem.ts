@@ -3,13 +3,13 @@ import Motion from '../Components/GravitySensitive'
 import GravitySensitive from '../Components/Motion'
 import SpatialState from '../Components/SpatialState'
 
-const ACCELERATION = 0.00000001
+const ACCELERATION = 0.005
 const DOWN = Math.cos(Math.PI)
 
 class PhysicsSystem extends System {
   update(delta: number) {
-    const spatialEntities = this.entityManager.getAllEntitiesPosessingComponentOfClass<GravitySensitive>(
-      GravitySensitive
+    const spatialEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [GravitySensitive]
     )
 
     spatialEntities.forEach((entity) => {
@@ -18,11 +18,11 @@ class PhysicsSystem extends System {
         entity
       )
 
-      // if (spatial) spatial.dy += ACCELERATION * delta
+      if (spatial) spatial.dy -= ACCELERATION * delta
     })
 
-    const movingEntities = this.entityManager.getAllEntitiesPosessingComponentOfClass<Motion>(
-      Motion
+    const movingEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Motion]
     )
 
     movingEntities.forEach((entity) => {
@@ -33,13 +33,13 @@ class PhysicsSystem extends System {
 
       if (!spatial) return
 
-      let amount = 0.0001 * delta * spatial?.dx
+      let amount = 0.01 * delta * spatial?.dx
       spatial.x += amount
-      if (spatial.x >= 800) spatial.x = 800
+      spatial.x = Math.max(Math.min(800, spatial.x), 0)
 
-      amount = 0.0001 * delta * spatial.dy
+      amount = 0.01 * delta * spatial.dy
       spatial.y += amount * DOWN
-      if (spatial.y >= 600) spatial.x = 600
+      spatial.y = Math.max(Math.min(600, spatial.y), 0)
     })
   }
 }

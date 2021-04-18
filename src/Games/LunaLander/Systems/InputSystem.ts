@@ -21,8 +21,8 @@ class InputSystem extends System {
   }
 
   update(delta: number) {
-    const inputEntites = this.entityManager.getAllEntitiesPosessingComponentOfClass<Input>(
-      Input
+    const inputEntites = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Input]
     )
 
     inputEntites.forEach((entity) => {
@@ -45,7 +45,7 @@ class InputSystem extends System {
         const renderable = this.entityManager.getComponentOfClass<
           Renderable<Phaser.GameObjects.Sprite>
         >(Renderable, entity)
-        renderable?.rotate(delta * 0.00001)
+        renderable?.rotate(delta * 0.01)
       }
 
       const p1RotateRightKey = this.findKey(this.P1_KEY_ROTR)
@@ -56,7 +56,7 @@ class InputSystem extends System {
         const renderable = this.entityManager.getComponentOfClass<
           Renderable<Phaser.GameObjects.Sprite>
         >(Renderable, entity)
-        renderable?.rotate(delta * -0.00001)
+        renderable?.rotate(delta * -0.01)
       }
     })
   }
