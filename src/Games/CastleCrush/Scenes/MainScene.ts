@@ -5,6 +5,7 @@ import { CANVAS_WIDTH } from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
+import LaneMovementSystem from '../Systems/LaneMovementSystem'
 
 const TICK = 1000
 
@@ -23,6 +24,7 @@ export default class MainScene extends Scene {
     this.facotry.player()
 
     this.systems = [
+      new LaneMovementSystem(this.entityManager, this.add, this.input),
       new DrawSystem(this.entityManager, this.add, this.input),
       new HandSystem(this.entityManager, this.add, this.input)
     ]

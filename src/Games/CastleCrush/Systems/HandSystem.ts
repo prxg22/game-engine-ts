@@ -1,5 +1,4 @@
 import { Entity, System } from '../../../Core'
-import Creature from '../Components/Creature'
 import CreatureCollection from '../Components/CreatureCollection'
 import Hand from '../Components/Hand'
 import Input from '../Components/Input'
@@ -54,8 +53,8 @@ export default class HandSystem extends System {
       let card: Entity = -1
 
       const remove = (index: number): Entity[] | undefined => {
-        if (!hand.cards[0]) return
-        const cards = hand.remove(hand.cards[0])
+        if (!hand.cards[index]) return
+        const cards = hand.remove(hand.cards[index])
         this.entityManager.removeEntity(card)
         return cards
       }

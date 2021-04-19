@@ -15,7 +15,7 @@ import {
   HAND_THREE_KEY,
   HAND_TWO_KEY
 } from '../constants'
-import Creature from '../Components/Creature'
+import CreatureAttributes from '../Components/CreatureAttributes'
 import LanePosition from '../Components/LanePosition'
 
 let instance: Factory
@@ -97,7 +97,10 @@ export default class Factory {
     ]
 
     this.entityManager.addComponent(new Health(hp), creature)
-    this.entityManager.addComponent(new Creature(speed, atk, range), creature)
+    this.entityManager.addComponent(
+      new CreatureAttributes(descriptor.name, speed, atk, range),
+      creature
+    )
     this.entityManager.addComponent(new LanePosition(lane, position), creature)
 
     return creature
