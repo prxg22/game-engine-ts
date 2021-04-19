@@ -2,18 +2,27 @@ import Phaser from 'phaser'
 import { Component, Entity, EntityManager, Scene, System } from '../../../Core'
 import EntityCollection from '../Components/EntityCollection'
 import Renderable from '../Components/Renderable'
-import { CANVAS_WIDTH, TICK } from '../constants'
+import { CANVAS_WIDTH, GRID_SIZE } from '../constants'
 import Factory from '../Factory'
 import CollideSystem from '../Systems/CollideSystem'
 import InputSystem from '../Systems/InputSystem'
 import PhysicsSystem from '../Systems/PhysicsSystem'
 import RenderSystem from '../Systems/RenderSystem'
 import TickSystem from '../Systems/TickSystem'
+import Assets from '../Assets/*.png'
 
 class MainScene extends Scene {
   private factory?: Factory
   private text?: Phaser.GameObjects.Text
   private dt: number = 0
+
+  preload() {
+    console.log(Assets.snake8bit)
+    this.load.spritesheet('snake', Assets.snake8bit, {
+      frameWidth: 8,
+      frameHeight: 8
+    })
+  }
 
   create() {
     this.text = this.add.text(CANVAS_WIDTH + 16, 0, '', {

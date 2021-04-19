@@ -2,10 +2,8 @@ import { Entity, System } from '../../../Core'
 import Alive from '../Components/Alive'
 import Input from '../Components/Input'
 import Spatial from '../Components/Spatial'
-import { KEY_UP, KEY_RIGHT, KEY_LEFT, KEY_DOWN, TICK } from '../constants'
+import { KEY_UP, KEY_RIGHT, KEY_LEFT, KEY_DOWN, VELOCITY } from '../constants'
 import TickSystem from './TickSystem'
-
-const VELOCITY = 1
 
 export default class InputSystem extends System {
   inputManager: Map<Entity, Phaser.Input.Keyboard.Key | undefined> = new Map()

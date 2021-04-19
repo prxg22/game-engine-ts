@@ -4,12 +4,12 @@ import Renderable from '..//Components/Renderable'
 import Alive from '../Components/Alive'
 import Spatial from '../Components/Spatial'
 import {
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
   GRID_SIZE,
-  MAX_X,
-  MAX_Y,
-  NEUTRAL
+  SNAKE_FRAME_DOWN,
+  SNAKE_FRAME_LEFT,
+  SNAKE_FRAME_RIGHT,
+  SNAKE_FRAME_UP,
+  VELOCITY
 } from '../constants'
 
 export default class RenderSystem extends System {
@@ -29,15 +29,30 @@ export default class RenderSystem extends System {
       const renderable = this.entityManager.getComponentOfClass(
         Renderable,
         e
-      ) as Renderable<GameObjects.Shape>
+      ) as Renderable<GameObjects.Sprite>
 
       const alive = this.entityManager.getComponentOfClass(Alive, e) as Alive
 
       if (!spatial || !renderable) return
 
-      if (alive && !alive.isAlive) {
-        renderable.sprite.setFillStyle(NEUTRAL)
-        return
+      if (e === this.entityManager.getEntityByTag('snake')) {
+        switch (spatial.dx) {
+          case VELOCITY:
+            renderable.sprite.setFrame(SNAKE_FRAME_RIGHT)
+            break
+          case -VELOCITY:
+            renderable.sprite.setFrame(SNAKE_FRAME_LEFT)
+            break
+        }
+
+        switch (spatial.dy) {
+          case -VELOCITY:
+            renderable.sprite.setFrame(SNAKE_FRAME_UP)
+            break
+          case VELOCITY:
+            renderable.sprite.setFrame(SNAKE_FRAME_DOWN)
+            break
+        }
       }
 
       renderable.sprite.setPosition(

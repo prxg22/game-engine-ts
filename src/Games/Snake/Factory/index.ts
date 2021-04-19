@@ -8,16 +8,20 @@ import {
   CANVAS_WIDTH,
   CANVAS_HEIGHT,
   GRID_SIZE,
-  APPLE_COLOR,
-  SNAKE_COLOR,
+  FRAME_FRAME_UP,
+  FRAME_FRAME_DOWN,
+  FRAME_FRAME_LEFT,
+  FRAME_FRAME_RIGHT,
   FRAME_COLOR,
-  NEUTRAL,
   KEY_UP,
   KEY_DOWN,
   KEY_LEFT,
   KEY_RIGHT,
   MAX_X,
-  MAX_Y
+  MAX_Y,
+  SNAKE_FRAME_BODY,
+  SNAKE_FRAME_RIGHT,
+  APPLE_FRAME
 } from '../constants'
 import Collidable from '../Components/Collidable'
 import Alive from '../Components/Alive'
@@ -44,6 +48,7 @@ export default class Factory {
     }
 
     const snake = this.entityManager.createEntity('snake')
+    const bodyPart = this.bodyPart(position.x - 1, position.y) as Entity
 
     const keys = [
       this.input?.keyboard.addKey(KEY_UP),
@@ -53,20 +58,20 @@ export default class Factory {
     ]
 
     this.entityManager?.addComponent(new Input(keys), snake)
-    this.entityManager?.addComponent(new EntityCollection(), snake)
+    this.entityManager?.addComponent(new EntityCollection([bodyPart]), snake)
     this.entityManager?.addComponent(new Collidable(), snake)
     this.entityManager?.addComponent(
       new Spatial(position.x, position.y, 0, 0),
       snake
     )
+
     this.entityManager?.addComponent(
-      new Renderable<Phaser.GameObjects.Rectangle>(
-        this.factory?.rectangle(
+      new Renderable(
+        this.factory?.sprite(
           position.x * GRID_SIZE,
           position.y * GRID_SIZE,
-          GRID_SIZE,
-          GRID_SIZE,
-          SNAKE_COLOR
+          'snake',
+          SNAKE_FRAME_RIGHT
         )
       ),
       snake
@@ -93,14 +98,8 @@ export default class Factory {
     )
 
     this.entityManager.addComponent(
-      new Renderable<GameObjects.Shape>(
-        this.factory.rectangle(
-          position.x * GRID_SIZE,
-          position.y * GRID_SIZE,
-          GRID_SIZE,
-          GRID_SIZE,
-          APPLE_COLOR
-        )
+      new Renderable(
+        this.factory.sprite(position.x, position.y, 'snake', APPLE_FRAME)
       ),
       apple
     )
@@ -117,15 +116,7 @@ export default class Factory {
     this.entityManager.addComponent(new Collidable(), bodyPart)
     this.entityManager?.addComponent(new Spatial(x, y, 0, 0), bodyPart)
     this.entityManager?.addComponent(
-      new Renderable(
-        this.factory.rectangle(
-          x * GRID_SIZE,
-          y * GRID_SIZE,
-          GRID_SIZE,
-          GRID_SIZE,
-          SNAKE_COLOR
-        )
-      ),
+      new Renderable(this.factory.sprite(x, y, 'snake', SNAKE_FRAME_BODY)),
       bodyPart
     )
 
@@ -140,6 +131,24 @@ export default class Factory {
       CANVAS_HEIGHT - GRID_SIZE
     )
     frame?.setStrokeStyle(GRID_SIZE, FRAME_COLOR, 1)
+
+    for (let i = 0; i <= MAX_X; i++) {
+      this.factory
+        ?.sprite(i * GRID_SIZE, 0, 'snake', FRAME_FRAME_UP)
+        .setDisplayOrigin(0, 0)
+      this.factory
+        ?.sprite(i * GRID_SIZE, MAX_Y * GRID_SIZE, 'snake', FRAME_FRAME_DOWN)
+        .setDisplayOrigin(0, 0)
+    }
+
+    for (let i = 0; i <= MAX_Y; i++) {
+      this.factory
+        ?.sprite(0, i * GRID_SIZE, 'snake', FRAME_FRAME_LEFT)
+        .setDisplayOrigin(0, 0)
+      this.factory
+        ?.sprite(MAX_X * GRID_SIZE, i * GRID_SIZE, 'snake', FRAME_FRAME_RIGHT)
+        .setDisplayOrigin(0, 0)
+    }
   }
 
   static get factory(): Factory {

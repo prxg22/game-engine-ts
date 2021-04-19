@@ -1,4 +1,5 @@
 import { System } from '../../../Core'
+import Alive from '../Components/Alive'
 import EntityCollection from '../Components/EntityCollection'
 import Spatial from '../Components/Spatial'
 import {
@@ -20,12 +21,19 @@ export default class PhysicsSystem extends System {
     this.time = 0
 
     const snake = this.entityManager.getEntityByTag('snake')
+    const alive = this.entityManager.getComponentOfClass(
+      Alive,
+      snake || -1
+    ) as Alive
 
-    if (!snake) return
+    if (!snake || !alive || !alive.isAlive) return
+
     const spatial = this.entityManager.getComponentOfClass(
       Spatial,
       snake
     ) as Spatial
+
+    if (!spatial.dx && !spatial.dy) return
 
     const bodyParts = this.entityManager.getComponentOfClass(
       EntityCollection,
