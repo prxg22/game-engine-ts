@@ -9,6 +9,7 @@ import {
   HAND_ONE_KEY,
   HAND_THREE_KEY,
   HAND_TWO_KEY,
+  MAX_LANE_POSITION,
   TICK
 } from '../constants'
 import Factory from '../Factory'
@@ -21,6 +22,62 @@ export default class HandSystem extends System {
   create() {
     const factory = Factory.instance
     this.factory = factory
+  }
+
+  summonCreature(card: Entity, player: Entity): Entity {
+    const isOpponent = this.entityManager.getEntityByTag('opponent') === player
+    const creature = this.factory?.creature(
+      card,
+      0,
+      !isOpponent ? 0 : MAX_LANE_POSITION - 1
+    )
+    if (!creature) return -1
+
+    const creatureCollection = this.entityManager.getComponentOfClass(
+      CreatureCollection,
+      player
+    ) as CreatureCollection
+
+    if (creature) creatureCollection.entities.push(creature)
+    return creature
+  }
+
+  invokeSelctedCard(player: Entity): Entity | undefined {
+    const hand = this.entityManager.getComponentOfClass(Hand, player) as Hand
+
+    const key = this.inputManager.get(player)
+    this.inputManager.set(player, undefined)
+
+    if (!key) return
+
+    let card: Entity = -1
+
+    const remove = (index: number): Entity[] | undefined => {
+      if (!hand.cards[index]) return
+      const cards = hand.remove(hand.cards[index])
+      this.entityManager.removeEntity(card)
+      return cards
+    }
+
+    switch (key.keyCode) {
+      case HAND_ONE_KEY:
+        ;[card] = remove(0) || []
+        break
+      case HAND_TWO_KEY:
+        ;[card] = remove(1) || []
+        break
+      case HAND_THREE_KEY:
+        ;[card] = remove(2) || []
+        break
+      case HAND_FOUR_KEY:
+        ;[card] = remove(3) || []
+        break
+      case HAND_FIVE_KEY:
+        ;[card] = remove(4) || []
+        break
+    }
+
+    return card
   }
 
   update(dt: number) {
@@ -43,49 +100,8 @@ export default class HandSystem extends System {
       if (this.time < TICK) return
       this.time = 0
 
-      const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
-
-      const key = this.inputManager.get(entity)
-      this.inputManager.set(entity, undefined)
-
-      if (!key) return
-
-      let card: Entity = -1
-
-      const remove = (index: number): Entity[] | undefined => {
-        if (!hand.cards[index]) return
-        const cards = hand.remove(hand.cards[index])
-        this.entityManager.removeEntity(card)
-        return cards
-      }
-
-      switch (key.keyCode) {
-        case HAND_ONE_KEY:
-          ;[card] = remove(0) || []
-          break
-        case HAND_TWO_KEY:
-          ;[card] = remove(1) || []
-          break
-        case HAND_THREE_KEY:
-          ;[card] = remove(2) || []
-          break
-        case HAND_FOUR_KEY:
-          ;[card] = remove(3) || []
-          break
-        case HAND_FIVE_KEY:
-          ;[card] = remove(4) || []
-          break
-      }
-
-      if (card) {
-        const creature = this.factory?.creature(card, 0)
-        const creatureCollection = this.entityManager.getComponentOfClass(
-          CreatureCollection,
-          entity
-        ) as CreatureCollection
-
-        if (creature) creatureCollection.entities.push(creature)
-      }
+      const card = this.invokeSelctedCard(entity)
+      if (card) this.summonCreature(card, entity)
     })
   }
 }

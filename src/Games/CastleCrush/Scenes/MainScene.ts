@@ -1,5 +1,6 @@
 import { GameObjects } from 'phaser'
-import { Component, Scene } from '../../../Core'
+import { Component, Entity, Scene } from '../../../Core'
+import CreatureCollection from '../Components/CreatureCollection'
 import Renderer from '../Components/Renderer'
 import { CANVAS_WIDTH } from '../constants'
 import Factory from '../Factory'
@@ -14,15 +15,18 @@ export default class MainScene extends Scene {
   text?: GameObjects.Text
 
   create() {
-    this.facotry = new Factory(this.entityManager, this.add, this.input)
+    // debug text object
     this.text = this.add.text(CANVAS_WIDTH + 1, 0, '', {
       color: '#fff',
       fontSize: '10px'
     })
 
     // create entities
+    this.facotry = new Factory(this.entityManager, this.add, this.input)
     this.facotry.player()
+    this.facotry.opponent()
 
+    // boot systems
     this.systems = [
       new LaneMovementSystem(this.entityManager, this.add, this.input),
       new DrawSystem(this.entityManager, this.add, this.input),
@@ -35,12 +39,18 @@ export default class MainScene extends Scene {
   update(time: number, dt: number) {
     super.update(dt)
 
-    this.text?.setText(this.debug())
+    const oponnet = this.entityManager?.getEntityByTag('opponent')
+    if (!oponnet) return
+    const creatures = this.entityManager.getComponentOfClass(
+      CreatureCollection,
+      oponnet
+    ) as CreatureCollection
+
+    this.text?.setText(this.debug(oponnet, ...creatures.entities))
   }
 
-  debug(): string {
-    return this.entityManager
-      .getAllEntities()
+  debug(...entities: Entity[]): string {
+    return (entities.length ? entities : this.entityManager.getAllEntities())
       .map((entity) => {
         const tag = this.entityManager.getTagByEntity(entity)
         let msg = `--${tag || entity}--\n`

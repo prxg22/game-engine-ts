@@ -70,6 +70,38 @@ export default class Factory {
     return player
   }
 
+  opponent(): Entity {
+    const opponent = this.entityManager.createEntity('opponent')
+
+    const cards = [
+      'creature-1',
+      'creature-2',
+      'creature-3',
+      'creature-4',
+      'creature-1'
+    ]
+
+    this.entityManager.addComponent(new Mana(12, 0), opponent)
+    this.entityManager.addComponent(new Health(1000), opponent)
+    this.entityManager.addComponent(new Deck(cards), opponent)
+    this.entityManager.addComponent(new Hand(), opponent)
+    this.entityManager.addComponent(new CreatureCollection(), opponent)
+    this.entityManager.addComponent(
+      new Input([
+        this.input.keyboard.addKey(HAND_ONE_KEY),
+        this.input.keyboard.addKey(HAND_TWO_KEY),
+        this.input.keyboard.addKey(HAND_THREE_KEY),
+        this.input.keyboard.addKey(HAND_FOUR_KEY),
+        this.input.keyboard.addKey(HAND_FIVE_KEY)
+      ]),
+      opponent
+    )
+
+    // this.entityManager.addComponent(new Renderer(this.factory.), opponent)
+
+    return opponent
+  }
+
   card(name: string): Entity {
     const card = this.entityManager.createEntity()
 
