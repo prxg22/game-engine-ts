@@ -36,6 +36,12 @@ class EntityManager {
     return this._tagsMap.get(tag)
   }
 
+  getTagByEntity(entity: Entity): string | undefined {
+    for (let [key, value] of this._tagsMap.entries()) {
+      if (value === entity) return key
+    }
+  }
+
   getComponents(key: Entity | string): Component[] {
     let entity: Entity = key as Entity
     if (typeof key === 'string') entity = this._tagsMap.get(key) as Entity
@@ -88,6 +94,10 @@ class EntityManager {
       if (hasAllComponents) return [...arr, e]
       return arr
     }, [])
+  }
+
+  getAllEntities(): Entity[] {
+    return Array.from(this._entitiesMap.keys())
   }
 }
 

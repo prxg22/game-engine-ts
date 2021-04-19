@@ -3,7 +3,7 @@ import { Component } from '../../../Core'
 export const MIN_MANA = 0
 export const MAX_MANA = 12
 
-class ManaComponent extends Component {
+export default class Mana extends Component {
   private _current: number
   private _max: number
 
@@ -41,5 +41,3 @@ class ManaComponent extends Component {
     this._max = Math.max(value, MIN_MANA)
   }
 }
-
-export default ManaComponent

@@ -1,12 +1,13 @@
 import Phaser from 'phaser'
-import BattleScene from './Scenes/BattleScene'
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants'
+import MainScene from './Scenes/MainScene'
 
 export const init = () => {
   return new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'content',
-    width: 800,
-    height: 600,
+    width: CANVAS_WIDTH * 2,
+    height: CANVAS_HEIGHT * 2,
     physics: {
       default: 'arcade',
       arcade: {
@@ -14,7 +15,7 @@ export const init = () => {
       }
     },
     backgroundColor: 'transparent',
-    scene: BattleScene
+    scene: MainScene
   })
 }
 

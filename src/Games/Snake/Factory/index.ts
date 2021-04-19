@@ -150,8 +150,4 @@ export default class Factory {
         .setDisplayOrigin(0, 0)
     }
   }
-
-  static get factory(): Factory {
-    return instance
-  }
 }

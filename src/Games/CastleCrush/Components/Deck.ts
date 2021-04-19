@@ -1,30 +1,22 @@
-import { Component, Entity } from '../../../Core'
+import { Component } from '../../../Core'
 
-export enum DECK_STATUS {
-  INITIAL,
-  DRAWING_CARD,
-  DROPPING_CARD
-}
-
-class DeckComponent extends Component {
-  status: DECK_STATUS
+export default class Deck extends Component {
   private current: number = 0
-  private _cards: Entity[]
+  private _cards: string[]
 
-  constructor(cards: Entity[]) {
+  constructor(cards: string[]) {
     super()
     this._cards = cards
-    this.status = DECK_STATUS.INITIAL
   }
 
-  get cards(): Entity[] {
+  get cards(): string[] {
     return this._cards.slice(this.current)
   }
   get length() {
     return this._cards.length - this.current
   }
 
-  draw(n: number = 1): Entity[] {
+  draw(n: number = 1): string[] {
     let draw = this._cards.slice(this.current, this.current + n)
     this.current += Math.max(n, 0)
 
@@ -47,5 +39,3 @@ class DeckComponent extends Component {
     }
   }
 }
-
-export default DeckComponent

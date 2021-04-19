@@ -1,7 +1,10 @@
-class HealthComponent {
+import { Component } from '../../../Core'
+
+export default class Health extends Component {
   private _current
 
   constructor(public max: number, current: number = max) {
+    super()
     this._current = current
   }
 
@@ -21,5 +24,3 @@ class HealthComponent {
     this.current += Math.max(n, 0)
   }
 }
-
-export default HealthComponent

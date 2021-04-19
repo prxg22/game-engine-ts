@@ -1,5 +1,9 @@
 {
   "name": "creature-1",
   "mana": 1,
-  "type": "CREATURE"
+  "type": "CREATURE",
+  "atk": 1,
+  "speed": 1,
+  "hp": 100,
+  "range": 0
 }
