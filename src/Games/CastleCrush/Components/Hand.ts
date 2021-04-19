@@ -21,7 +21,6 @@ export default class Hand extends Component {
     const entitiesToBeRemoved: Entity[] =
       typeof entities === 'number' ? [entities] : entities
 
-    console.log({ entitiesToBeRemoved })
     entitiesToBeRemoved.forEach((card) => {
       const index = this.cards.findIndex((c) => c === card)
 

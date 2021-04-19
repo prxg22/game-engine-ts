@@ -43,9 +43,9 @@ export default class Factory {
 
     const cards = [
       'creature-1',
-      'creature-2',
-      'creature-3',
-      'creature-4',
+      'creature-1',
+      'creature-1',
+      'creature-1',
       'creature-1'
     ]
 
@@ -75,9 +75,9 @@ export default class Factory {
 
     const cards = [
       'creature-1',
-      'creature-2',
-      'creature-3',
-      'creature-4',
+      'creature-1',
+      'creature-1',
+      'creature-1',
       'creature-1'
     ]
 

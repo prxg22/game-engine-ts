@@ -17,7 +17,6 @@ class MainScene extends Scene {
   private dt: number = 0
 
   preload() {
-    console.log(Assets.snake8bit)
     this.load.spritesheet('snake', Assets.snake8bit, {
       frameWidth: 8,
       frameHeight: 8

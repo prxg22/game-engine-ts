@@ -7,6 +7,7 @@ import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
+import AttackSystem from '../Systems/AttackSystem'
 
 const TICK = 1000
 
@@ -28,6 +29,7 @@ export default class MainScene extends Scene {
 
     // boot systems
     this.systems = [
+      new AttackSystem(this.entityManager, this.add, this.input),
       new LaneMovementSystem(this.entityManager, this.add, this.input),
       new DrawSystem(this.entityManager, this.add, this.input),
       new HandSystem(this.entityManager, this.add, this.input)
@@ -39,14 +41,27 @@ export default class MainScene extends Scene {
   update(time: number, dt: number) {
     super.update(dt)
 
-    const oponnet = this.entityManager?.getEntityByTag('opponent')
-    if (!oponnet) return
-    const creatures = this.entityManager.getComponentOfClass(
+    const opponent = this.entityManager?.getEntityByTag('opponent')
+    const player = this.entityManager?.getEntityByTag('player')
+    if (!opponent || !player) return
+    const playerCreatures = this.entityManager.getComponentOfClass(
       CreatureCollection,
-      oponnet
+      player
     ) as CreatureCollection
 
-    this.text?.setText(this.debug(oponnet, ...creatures.entities))
+    const opponentCreatures = this.entityManager.getComponentOfClass(
+      CreatureCollection,
+      opponent
+    ) as CreatureCollection
+
+    this.text?.setText(
+      this.debug(
+        player,
+        opponent,
+        ...playerCreatures.entities,
+        ...opponentCreatures.entities
+      )
+    )
   }
 
   debug(...entities: Entity[]): string {
