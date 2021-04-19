@@ -4,7 +4,7 @@ import CreatureAttributes, {
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
-import { TICK } from '../constants'
+import { MAX_LANE_POSITION, TICK } from '../constants'
 
 export default class AtackSystem extends System {
   private time: number = 0
@@ -33,13 +33,11 @@ export default class AtackSystem extends System {
         creature
       ) as CreatureAttributes
 
-      const nextPosition = lanePosition.position + creatureAttributes.speed
-
       return (
         lanePosition.lane === lane &&
         (!isOpponent
-          ? attackPosition >= nextPosition
-          : attackPosition <= nextPosition)
+          ? attackPosition >= lanePosition.position
+          : attackPosition <= lanePosition.position)
       )
     })
   }
@@ -61,14 +59,16 @@ export default class AtackSystem extends System {
 
       const modifier = isOpponent ? -1 : 1
       const attackPosition =
-        lanePosition.position +
-        (creatureAttributes.range + creatureAttributes.speed) * modifier
+        lanePosition.position + creatureAttributes.range * modifier
+
       if (
         this.hasOpponentCreatureOnPosition(
           lanePosition.lane,
           attackPosition,
           isOpponent
-        )
+        ) ||
+        attackPosition <= 0 ||
+        attackPosition >= MAX_LANE_POSITION
       ) {
         creatureAttributes.status = CREATURE_STATUS.ATACKING
       }
