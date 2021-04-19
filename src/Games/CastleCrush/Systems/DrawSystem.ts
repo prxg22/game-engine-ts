@@ -45,8 +45,8 @@ class DrawSystem extends System {
       const [cardName] = deck.draw()
 
       if (hand.full) return
-      const card = this.factory.card(cardName)
-      hand.add(card)
+      const card = this.factory?.card(cardName)
+      hand.add(card || -1)
     })
   }
 }
