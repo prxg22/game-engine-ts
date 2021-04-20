@@ -2,12 +2,19 @@ import { GameObjects } from 'phaser'
 import { Component, Entity, Scene } from '../../../Core'
 import CreatureCollection from '../Components/CreatureCollection'
 import Renderer from '../Components/Renderer'
-import { CANVAS_WIDTH } from '../constants'
+import {
+  CANVAS_WIDTH,
+  OPPONENT_HAND_DISPLAY_ORIGIN,
+  PLAYER_HAND_DISPLAY_ORIGIN,
+} from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
 import AttackSystem from '../Systems/AttackSystem'
+import MouseInputSystem from '../Systems/MouseInputSystem'
+import Hand from '../Components/Hand'
+import MouseInput from '../Components/MouseInput'
 
 const TICK = 1000
 
@@ -17,10 +24,15 @@ export default class MainScene extends Scene {
 
   create() {
     // debug text object
-    this.text = this.add.text(CANVAS_WIDTH + 1, 0, '', {
-      color: '#fff',
-      fontSize: '10px'
-    })
+    this.text = this.add.text(
+      CANVAS_WIDTH + 16,
+      0,
+      `${PLAYER_HAND_DISPLAY_ORIGIN} - ${OPPONENT_HAND_DISPLAY_ORIGIN}`,
+      {
+        color: '#fff',
+        fontSize: '10px',
+      },
+    )
 
     // create entities
     this.facotry = new Factory(this.entityManager, this.add, this.input)
@@ -29,44 +41,42 @@ export default class MainScene extends Scene {
 
     // boot systems
     this.systems = [
-      new AttackSystem(this.entityManager, this.add, this.input),
-      new LaneMovementSystem(this.entityManager, this.add, this.input),
+      // new AttackSystem(this.entityManager, this.add, this.input),
+      // new LaneMovementSystem(this.entityManager, this.add, this.input),
+      new MouseInputSystem(this.entityManager, this.add, this.input),
       new DrawSystem(this.entityManager, this.add, this.input),
-      new HandSystem(this.entityManager, this.add, this.input)
+      new HandSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()
   }
 
   update(time: number, dt: number) {
-    super.update(dt)
-
     const opponent = this.entityManager?.getEntityByTag('opponent')
     const player = this.entityManager?.getEntityByTag('player')
     if (!opponent || !player) return
-    const playerCreatures = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      player
-    ) as CreatureCollection
+    const playerHand = this.entityManager.getComponentOfClass(
+      Hand,
+      player,
+    ) as Hand
+
+    const mouseInput = this.entityManager.getComponentOfClass(
+      MouseInput,
+      player,
+    ) as MouseInput
 
     const opponentCreatures = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      opponent
-    ) as CreatureCollection
+      Hand,
+      opponent,
+    ) as Hand
 
-    this.text?.setText(
-      this.debug(
-        player,
-        opponent,
-        ...playerCreatures.entities,
-        ...opponentCreatures.entities
-      )
-    )
+    this.text?.setText(this.debug(player, opponent))
+    super.update(dt)
   }
 
   debug(...entities: Entity[]): string {
     return (entities.length ? entities : this.entityManager.getAllEntities())
-      .map((entity) => {
+      .map(entity => {
         const tag = this.entityManager.getTagByEntity(entity)
         let msg = `--${tag || entity}--\n`
         msg += this.debugEntity(entity)
@@ -78,21 +88,23 @@ export default class MainScene extends Scene {
   debugEntity(entity: Entity): string {
     return this.entityManager
       .getComponents(entity)
-      .map((component: Component) => {
-        let msg = `${component.toString()}: `
-        if (component instanceof Renderer) {
-          msg += `\nsprite.x: ${component.sprite.x} sprite.y: ${component.sprite.y}\n`
-          return msg
-        }
+      .map(this.debugComponent)
+      .join('\n')
+  }
 
-        msg += Object.entries(component)
-          .map(([key, value]): string => {
-            return ` ${key}: ${value}`
-          })
-          .join('')
+  debugComponent(component: Component) {
+    let msg = `${component.toString()}: `
+    if (component instanceof Renderer) {
+      msg += `\nsprite.x: ${component.sprite.x} sprite.y: ${component.sprite.y}\n`
+      return msg
+    }
 
-        return msg
+    msg += Object.entries(component)
+      .map(([key, value]): string => {
+        return ` ${key}: ${value}`
       })
       .join('\n')
+
+    return msg
   }
 }

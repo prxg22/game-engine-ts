@@ -1,7 +1,9 @@
+import { HAND_MAX_CARD } from '../constants'
 import { Component, Entity } from '../../../Core'
 
-const HAND_MAX_CARD = 5
 export default class Hand extends Component {
+  selected: Entity = -1
+
   constructor(public cards: Entity[] = []) {
     super()
   }
@@ -21,14 +23,14 @@ export default class Hand extends Component {
     const entitiesToBeRemoved: Entity[] =
       typeof entities === 'number' ? [entities] : entities
 
-    entitiesToBeRemoved.forEach((card) => {
-      const index = this.cards.findIndex((c) => c === card)
+    entitiesToBeRemoved.forEach(card => {
+      const index = this.cards.findIndex(c => c === card)
 
       removedCards.push(card)
 
       this.cards = [
         ...this.cards.slice(0, index),
-        ...this.cards.slice(index + 1)
+        ...this.cards.slice(index + 1),
       ]
     })
 

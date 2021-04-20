@@ -1,16 +1,20 @@
 import { Entity, System } from '../../../Core'
-import CreatureCollection from '../Components/CreatureCollection'
+import { FRAME_COLOR } from '../../Snake/constants'
+import Deck from '../Components/Deck'
 import Hand from '../Components/Hand'
-import Input from '../Components/Input'
-import Mana from '../Components/Mana'
+import MouseInput from '../Components/MouseInput'
+import Renderer from '../Components/Renderer'
 import {
-  HAND_FIVE_KEY,
-  HAND_FOUR_KEY,
-  HAND_ONE_KEY,
-  HAND_THREE_KEY,
-  HAND_TWO_KEY,
-  MAX_LANE_POSITION,
-  TICK
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  HAND_SELECTED_CARD_COLOR,
+  TICK,
+  PLAYER_HAND_DISPLAY_ORIGIN,
+  OPPONENT_HAND_DISPLAY_ORIGIN,
+  PLAYER_CARD_SIZE,
+  OPPONENT_CARD_SIZE,
+  PLAYER_CARD_COLOR,
+  OPPONENT_CARD_COLOR,
 } from '../constants'
 import Factory from '../Factory'
 
@@ -22,86 +26,148 @@ export default class HandSystem extends System {
   create() {
     const factory = Factory.instance
     this.factory = factory
-  }
 
-  summonCreature(card: Entity, player: Entity): Entity {
-    const isOpponent = this.entityManager.getEntityByTag('opponent') === player
-    const creature = this.factory?.creature(
-      card,
+    const frame = this.gameObjectFactory.rectangle(
+      8,
+      8,
+      CANVAS_WIDTH,
+      CANVAS_HEIGHT,
       0,
-      !isOpponent ? 0 : MAX_LANE_POSITION - 1
+      0,
     )
-    if (!creature) return -1
-
-    const creatureCollection = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      player
-    ) as CreatureCollection
-
-    if (creature) creatureCollection.entities.push(creature)
-    return creature
+    frame.setDisplayOrigin(0, 0)
+    frame.setStrokeStyle(8, FRAME_COLOR)
   }
 
-  invokeSelctedCard(player: Entity): Entity | undefined {
-    const hand = this.entityManager.getComponentOfClass(Hand, player) as Hand
+  // summonCreature(card: Entity, player: Entity): Entity {
+  //   const isOpponent = this.entityManager.getEntityByTag('opponent') === player
+  //   const creature = this.factory?.creature(
+  //     card,
+  //     0,
+  //     !isOpponent ? 0 : MAX_LANE_POSITION - 1,
+  //   )
+  //   if (!creature) return -1
 
-    const key = this.inputManager.get(player)
-    this.inputManager.set(player, undefined)
+  //   const creatureCollection = this.entityManager.getComponentOfClass(
+  //     CreatureCollection,
+  //     player,
+  //   ) as CreatureCollection
 
-    if (!key) return
+  //   if (creature) creatureCollection.entities.push(creature)
+  //   return creature
+  // }
 
-    let card: Entity = -1
+  // invokeSelctedCard(player: Entity): Entity | undefined {
+  //   const hand = this.entityManager.getComponentOfClass(Hand, player) as Hand
 
-    const remove = (index: number): Entity[] | undefined => {
+  //   const key = this.inputManager.get(player)
+  //   this.inputManager.set(player, undefined)
+
+  //   if (!key) return
+
+  //   let card: Entity = -1
+
+  //   const remove = (index: number): Entity[] | undefined => {
+  //     if (!hand.cards[index]) return
+  //     const cards = hand.remove(hand.cards[index])
+  //     this.entityManager.removeEntity(card)
+  //     return cards
+  //   }
+
+  //   switch (key.keyCode) {
+  //     case HAND_ONE_KEY:
+  //       ;[card] = remove(0) || []
+  //       break
+  //     case HAND_TWO_KEY:
+  //       ;[card] = remove(1) || []
+  //       break
+  //     case HAND_THREE_KEY:
+  //       ;[card] = remove(2) || []
+  //       break
+  //     case HAND_FOUR_KEY:
+  //       ;[card] = remove(3) || []
+  //       break
+  //     case HAND_FIVE_KEY:
+  //       ;[card] = remove(4) || []
+  //       break
+  //   }
+
+  //   return card
+  // }
+
+  draw(entity: Entity, deck: Deck, hand: Hand) {
+    if (!deck.drawList.length || hand.full) return
+
+    deck.drawList.forEach(card => {
+      const creature = this.factory?.card(card, entity, hand.cards.length)
+      hand.add(creature || -1)
+    })
+  }
+
+  checkInput(mouseInput: MouseInput, hand: Hand) {
+    const clickedIndexes = mouseInput.flush()
+
+    // verifica se um clique aconteceu em alguma carta na mão da entidade
+    clickedIndexes.forEach(index => {
       if (!hand.cards[index]) return
-      const cards = hand.remove(hand.cards[index])
-      this.entityManager.removeEntity(card)
-      return cards
-    }
-
-    switch (key.keyCode) {
-      case HAND_ONE_KEY:
-        ;[card] = remove(0) || []
-        break
-      case HAND_TWO_KEY:
-        ;[card] = remove(1) || []
-        break
-      case HAND_THREE_KEY:
-        ;[card] = remove(2) || []
-        break
-      case HAND_FOUR_KEY:
-        ;[card] = remove(3) || []
-        break
-      case HAND_FIVE_KEY:
-        ;[card] = remove(4) || []
-        break
-    }
-
-    return card
+      hand.selected = hand.cards[index]
+    })
   }
 
   update(dt: number) {
-    const inputHandAndManaEntitites = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
-      [Input, Hand, Mana]
+    const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Hand],
     )
 
-    inputHandAndManaEntitites.forEach((entity) => {
-      const input = this.entityManager.getComponentOfClass(
-        Input,
-        entity
-      ) as Input
-
-      this.inputManager.set(
+    handEntities.forEach(entity => {
+      const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
+      const mouseInput = this.entityManager.getComponentOfClass(
+        MouseInput,
         entity,
-        input.down[0] || this.inputManager.get(entity)
-      )
+      ) as MouseInput
+      const deck = this.entityManager.getComponentOfClass(Deck, entity) as Deck
 
-      this.time += dt
-      if (this.time < TICK) return
-      this.time = 0
+      if (mouseInput) this.checkInput(mouseInput, hand)
+      if (deck) this.draw(entity, deck, hand)
+    })
+  }
 
-      const card = this.invokeSelctedCard(entity)
-      if (card) this.summonCreature(card, entity)
+  render() {
+    const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Hand],
+    )
+
+    handEntities.forEach(entity => {
+      const isPlayer = entity === this.entityManager.getEntityByTag('player')
+
+      const playerHand = this.entityManager.getComponentOfClass(
+        Hand,
+        entity,
+      ) as Hand
+
+      playerHand.cards.forEach((card, index) => {
+        const renderer = this.entityManager.getComponentOfClass(
+          Renderer,
+          card,
+        ) as Renderer<Phaser.GameObjects.Shape>
+        const displayOrigin = isPlayer
+          ? PLAYER_HAND_DISPLAY_ORIGIN
+          : OPPONENT_HAND_DISPLAY_ORIGIN
+        const cardSize = isPlayer ? PLAYER_CARD_SIZE : OPPONENT_CARD_SIZE
+        const color = isPlayer ? PLAYER_CARD_COLOR : OPPONENT_CARD_COLOR
+
+        const [handOriginX, handOriginY] = displayOrigin
+        const [width] = cardSize
+
+        renderer.sprite.setPosition(
+          index * width * 2 + handOriginX,
+          handOriginY,
+        )
+
+        if (playerHand.selected === card)
+          renderer.sprite.setFillStyle(HAND_SELECTED_CARD_COLOR)
+        else renderer.sprite.setFillStyle(color)
+      })
     })
   }
 }
