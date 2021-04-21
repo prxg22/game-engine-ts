@@ -1,7 +1,5 @@
 import { Component } from '../../../Core'
-
-export const MIN_MANA = 0
-export const MAX_MANA = 12
+import { MIN_MANA, MAX_MANA } from '../constants'
 
 export default class Mana extends Component {
   private _current: number
@@ -10,7 +8,8 @@ export default class Mana extends Component {
   constructor(max: number, current: number = 0) {
     super()
     this._current = current >= MIN_MANA ? current : 0
-    this._max = max >= MIN_MANA ? current : 0
+    const newLocal = max >= MIN_MANA
+    this._max = newLocal ? current : 0
   }
 
   get current(): number {

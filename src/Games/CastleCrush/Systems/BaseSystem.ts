@@ -1,5 +1,5 @@
 import { System } from '../../../Core'
-import { TICK } from '../constants'
+import { CLOCK } from '../constants'
 import Factory from '../Factory'
 
 export default class BaseSystem extends System {
@@ -7,7 +7,7 @@ export default class BaseSystem extends System {
   factory?: Factory
 
   get tick(): boolean {
-    return this.time < TICK
+    return this.time < CLOCK
   }
 
   create() {
@@ -17,7 +17,7 @@ export default class BaseSystem extends System {
 
   update(dt: number) {
     this.time += dt
-    if (this.time < TICK) return
+    if (this.time < CLOCK) return
     this.time = 0
   }
 }

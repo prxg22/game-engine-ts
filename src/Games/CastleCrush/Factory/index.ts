@@ -1,4 +1,4 @@
-import Phaser, { GameObjects } from 'phaser'
+import Phaser, { Game, GameObjects } from 'phaser'
 import { Entity, EntityManager } from '../../../Core'
 import CARDS from '../Cards/*.json'
 import Deck from '../Components/Deck'
@@ -32,6 +32,7 @@ import {
   LANE_BASE_MARGIN_SIZE,
   LANE_PROPORTION_FACTOR,
   LANE_COLOR,
+  LANES,
 } from '../constants'
 import MouseInput from '../Components/MouseInput'
 import MouseInputSystem from '../Systems/MouseInputSystem'
@@ -137,6 +138,34 @@ export default class Factory {
     return opponent
   }
 
+  lanes(): Entity[] {
+    const lanes: Entity[] = []
+
+    for (let laneNumber = 0; laneNumber < LANES; laneNumber++) {
+      const lane = this.entityManager.createEntity(`lane-${laneNumber}`)
+      const [baseX, baseY] = LANE_BASE_POSITION_DISPLAY_ORIGIN
+      const [baseWidth, baseHeight] = LANE_BASE_SIZE
+      const sprite = this.factory.rectangle(
+        baseX,
+        baseY - (LANE_BASE_MARGIN_SIZE + baseHeight) * 2 * laneNumber,
+        baseWidth,
+        baseHeight,
+        LANE_COLOR,
+      )
+      const renderer = new Renderer(sprite)
+      this.entityManager.addComponent(renderer, lane)
+
+      const mouse = new MouseInput()
+
+      this.entityManager.addComponent(mouse, lane)
+
+      MouseInputSystem.bindMouseClickEvent(renderer, mouse)
+      lanes.push(lane)
+    }
+
+    return lanes
+  }
+
   card(name: string, entity: Entity, handPosition: number): Entity {
     const isPlayer = entity === this.entityManager.getEntityByTag('player')
 
@@ -161,10 +190,11 @@ export default class Factory {
     this.entityManager.addComponent(new CardDescriptor(name, mana, type), card)
 
     // mouse
-    const mouse = new MouseInput()
-    this.entityManager.addComponent(mouse, card)
-
-    MouseInputSystem.bindMouseClickEvent(renderer, mouse)
+    if (isPlayer) {
+      const mouse = new MouseInput()
+      this.entityManager.addComponent(mouse, card)
+      MouseInputSystem.bindMouseClickEvent(renderer, mouse)
+    }
     return card
   }
 

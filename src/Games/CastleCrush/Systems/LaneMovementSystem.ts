@@ -4,7 +4,7 @@ import CreatureCreatureAttributes, {
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
-import { MAX_LANE_POSITION, TICK, LANES } from '../constants'
+import { MAX_LANE_POSITION, CLOCK, LANES } from '../constants'
 import BaseSystem from './BaseSystem'
 
 export default class LaneMovementSystem extends BaseSystem {

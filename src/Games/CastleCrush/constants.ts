@@ -1,21 +1,27 @@
-export const TICK = 500
+// clock
+export const CLOCK = 500
 
+// canvas
 export const CANVAS_WIDTH = 800
 export const CANVAS_HEIGHT = 600
 
+export const MIN_MANA = 0
+export const MAX_MANA = 12
 export const MAX_CARDS = 5
-export const MAX_LANE_POSITION = 100
+
+// lane
 export const LANES = 3
+export const MAX_LANE_POSITION = 100
 
 export const PLAYER_CARD_SIZE = [32, 64]
 export const OPPONENT_CARD_SIZE = [24, 48]
-export const LANE_BASE_SIZE = [700, 50]
-export const LANE_BASE_MARGIN_SIZE = 15
+export const LANE_BASE_SIZE = [704, 60]
+export const LANE_BASE_MARGIN_SIZE = 0
 export const LANE_PROPORTION_FACTOR = 0.2
 
-export const PLAYER_HAND_DISPLAY_ORIGIN = [200, 450]
-export const OPPONENT_HAND_DISPLAY_ORIGIN = [200, 150]
-export const LANE_BASE_POSITION_DISPLAY_ORIGIN = [50, 350]
+export const PLAYER_HAND_DISPLAY_ORIGIN = [192, 504]
+export const OPPONENT_HAND_DISPLAY_ORIGIN = [192, 32]
+export const LANE_BASE_POSITION_DISPLAY_ORIGIN = [50, 384]
 
 export const PLAYER_CARD_COLOR = 0x2a9d8f
 export const OPPONENT_CARD_COLOR = 0xe76f51

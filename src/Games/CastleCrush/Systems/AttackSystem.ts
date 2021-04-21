@@ -4,7 +4,7 @@ import CreatureAttributes, {
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
-import { MAX_LANE_POSITION, TICK } from '../constants'
+import { MAX_LANE_POSITION, CLOCK } from '../constants'
 import BaseSystem from './BaseSystem'
 
 export default class AtackSystem extends BaseSystem {

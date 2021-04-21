@@ -61,15 +61,15 @@ class EntityManager {
 
   getComponentOfClass(
     componentClass: IComponent,
-    key: Entity | string
+    key: Entity | string,
   ): Component | undefined {
     let entity: Entity = key as Entity
     if (typeof key === 'string') entity = this._tagsMap.get(key) as Entity
-    if (!this._entitiesMap.has(entity)) throw Error('entity not found')
+    if (!this._entitiesMap.has(entity)) return
 
     const components = this._entitiesMap.get(entity)
 
-    return components?.find((c) => c instanceof componentClass)
+    return components?.find(c => c instanceof componentClass)
   }
 
   removeEntity(key: Entity | string) {
@@ -79,16 +79,14 @@ class EntityManager {
   }
 
   getAllEntitiesPosessingComponentOfClasses(
-    componentClasses: IComponent[]
+    componentClasses: IComponent[],
   ): Entity[] {
     const entities = Array.from(this._entitiesMap.keys())
 
     return entities.reduce((arr: Entity[], e: Entity) => {
       const entityComponents = this.getComponents(e)
-      const hasAllComponents = componentClasses.every((componentClass) =>
-        entityComponents.find(
-          (component) => component instanceof componentClass
-        )
+      const hasAllComponents = componentClasses.every(componentClass =>
+        entityComponents.find(component => component instanceof componentClass),
       )
 
       if (hasAllComponents) return [...arr, e]
