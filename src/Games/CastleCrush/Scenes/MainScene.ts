@@ -15,6 +15,7 @@ import MouseInputSystem from '../Systems/MouseInputSystem'
 import Hand from '../Components/Hand'
 import MouseInput from '../Components/MouseInput'
 import ManaSystem from '../Systems/ManaSystem'
+import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
 
 const TICK = 1000
 
@@ -45,6 +46,7 @@ export default class MainScene extends Scene {
       new DrawSystem(this.entityManager, this.add, this.input),
       new ManaSystem(this.entityManager, this.add, this.input),
       new HandSystem(this.entityManager, this.add, this.input),
+      new LaneSelectionSystem(this.entityManager, this.add, this.input),
       // new AttackSystem(this.entityManager, this.add, this.input),
       // new LaneMovementSystem(this.entityManager, this.add, this.input),
     ]

@@ -7,6 +7,12 @@ import Mana from '../Components/Mana'
 import Hand from '../Components/Hand'
 import CreatureCollection from '../Components/CreatureCollection'
 import CardDescriptor, { CARD_TYPE } from '../Components/CardDescriptor'
+import CreatureAttributes from '../Components/CreatureAttributes'
+import LaneSelection from '../Components/LaneSelection'
+import LanePosition from '../Components/LanePosition'
+import Renderer from '../Components/Renderer'
+import MouseInput from '../Components/MouseInput'
+import getHandCardsPositions from '../Utils/getHandCardsPositions'
 import {
   PLAYER_CARD_SIZE,
   OPPONENT_CARD_SIZE,
@@ -19,13 +25,15 @@ import {
   PLAYER_HAND_POSITION_NAME_2,
   PLAYER_HAND_POSITION_NAME_3,
   PLAYER_HAND_POSITION_NAME_4,
+  LANE_POSITION_NAME_0,
+  LANE_POSITION_NAME_1,
+  LANE_POSITION_NAME_2,
+  LANE_BASE_POSITION_DISPLAY_ORIGIN,
+  LANE_BASE_SIZE,
+  LANE_BASE_MARGIN_SIZE,
+  LANE_PROPORTION_FACTOR,
+  LANE_COLOR,
 } from '../constants'
-import CreatureAttributes from '../Components/CreatureAttributes'
-import LaneSelection from '../Components/LaneSelection'
-import LanePosition from '../Components/LanePosition'
-import Renderer from '../Components/Renderer'
-import MouseInput from '../Components/MouseInput'
-import getHandCardsPositions from '../Utils/getHandCardsPositions'
 
 let instance: Factory
 export default class Factory {
@@ -50,6 +58,7 @@ export default class Factory {
   player(): Entity {
     const player = this.entityManager.createEntity('player')
 
+    // deck cards
     const cards = [
       'creature-1',
       'creature-2',
@@ -58,21 +67,48 @@ export default class Factory {
       'creature-1',
     ]
 
+    // hand responsive area
     const [width, height] = PLAYER_CARD_SIZE
-    const handCardsPositions = getHandCardsPositions().map(([x, y]) => ({
+    const handCardAreas = getHandCardsPositions().map(([x, y]) => ({
       x,
       y,
       width,
       height,
     }))
 
+    // lane responsive area
+    const [laneX, laneY] = LANE_BASE_POSITION_DISPLAY_ORIGIN
+    const [laneWidth, laneHeight] = LANE_BASE_SIZE
+
     const clickAreaMap = {
-      [PLAYER_HAND_POSITION_NAME_0]: handCardsPositions[0],
-      [PLAYER_HAND_POSITION_NAME_1]: handCardsPositions[1],
-      [PLAYER_HAND_POSITION_NAME_2]: handCardsPositions[2],
-      [PLAYER_HAND_POSITION_NAME_3]: handCardsPositions[3],
-      [PLAYER_HAND_POSITION_NAME_4]: handCardsPositions[4],
+      [PLAYER_HAND_POSITION_NAME_0]: handCardAreas[0],
+      [PLAYER_HAND_POSITION_NAME_1]: handCardAreas[1],
+      [PLAYER_HAND_POSITION_NAME_2]: handCardAreas[2],
+      [PLAYER_HAND_POSITION_NAME_3]: handCardAreas[3],
+      [PLAYER_HAND_POSITION_NAME_4]: handCardAreas[4],
+      [LANE_POSITION_NAME_0]: {
+        x: laneX,
+        y: laneY,
+        width: laneWidth,
+        height: laneHeight,
+      },
+      [LANE_POSITION_NAME_1]: {
+        x: laneX,
+        y: laneY - laneHeight - LANE_BASE_MARGIN_SIZE,
+        width: laneWidth,
+        height: laneHeight,
+      },
+      [LANE_POSITION_NAME_2]: {
+        x: laneX,
+        y: laneY - 2 * (laneHeight + LANE_BASE_MARGIN_SIZE),
+        width: laneWidth,
+        height: laneHeight,
+      },
     }
+
+    this.factory
+      .rectangle(laneX, laneY, laneWidth, laneHeight, LANE_COLOR)
+      .setDisplayOrigin(0, 0)
 
     this.entityManager.addComponent(new MouseInput(clickAreaMap), player)
     this.entityManager.addComponent(new Mana(12, 0), player)
@@ -81,18 +117,6 @@ export default class Factory {
     this.entityManager.addComponent(new Hand(), player)
     this.entityManager.addComponent(new LaneSelection(), player)
     this.entityManager.addComponent(new CreatureCollection(), player)
-
-    // this.entityManager.addComponent(new LaneSelection(), player)
-    // this.entityManager.addComponent(
-    //   new Input([
-    //     this.input.keyboard.addKey(HAND_ONE_KEY),
-    //     this.input.keyboard.addKey(HAND_TWO_KEY),
-    //     this.input.keyboard.addKey(HAND_THREE_KEY),
-    //     this.input.keyboard.addKey(HAND_FOUR_KEY),
-    //     this.input.keyboard.addKey(HAND_FIVE_KEY),
-    //   ]),
-    //   player,
-    // )
 
     return player
   }

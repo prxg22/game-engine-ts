@@ -1,4 +1,4 @@
-import { HAND_MAX_CARD } from '../constants'
+import { MAX_CARDS } from '../constants'
 import { Component, Entity } from '../../../Core'
 
 export default class Hand extends Component {
@@ -9,7 +9,7 @@ export default class Hand extends Component {
   }
 
   get full() {
-    return this.cards.length >= HAND_MAX_CARD
+    return this.cards.length >= MAX_CARDS
   }
 
   add(card: Entity | Entity[]) {

@@ -1,6 +1,7 @@
 import Phaser from 'phaser'
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants'
 import MainScene from './Scenes/MainScene'
+import TestScene from './Scenes/TestScene'
 
 export const init = () => {
   return new Phaser.Game({
@@ -11,11 +12,11 @@ export const init = () => {
     physics: {
       default: 'arcade',
       arcade: {
-        gravity: { y: 0 }
-      }
+        gravity: { y: 0 },
+      },
     },
-    backgroundColor: 'transparent',
-    scene: MainScene
+    backgroundColor: '#264653',
+    scene: MainScene,
   })
 }
 
