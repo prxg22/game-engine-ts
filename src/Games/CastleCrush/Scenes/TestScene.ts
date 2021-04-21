@@ -11,12 +11,15 @@ export default class TestScene extends Scene {
       .setInteractive()
 
     this.text = this.add.text(100, 208, this.message).setDisplayOrigin(0, 0)
+    this.input.on(
+      Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN,
+      (pointer: Phaser.Input.Pointer) => {},
+    )
   }
+
   get message(): string {
     return `${this.shape?.input.localX} - ${this.shape?.input.localY}`
   }
-  update() {
-    if (this.input.mousePointer.leftButtonDown())
-      this.text?.setText(this.message)
-  }
+
+  update() {}
 }

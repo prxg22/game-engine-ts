@@ -1,4 +1,4 @@
-import { Entity, System } from '../../../Core'
+import { Entity } from '../../../Core'
 import { FRAME_COLOR } from '../../Snake/constants'
 import Deck from '../Components/Deck'
 import Hand from '../Components/Hand'
@@ -8,39 +8,16 @@ import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
   HAND_SELECTED_CARD_COLOR,
-  TICK,
   PLAYER_HAND_DISPLAY_ORIGIN,
   OPPONENT_HAND_DISPLAY_ORIGIN,
   PLAYER_CARD_SIZE,
   OPPONENT_CARD_SIZE,
   PLAYER_CARD_COLOR,
   OPPONENT_CARD_COLOR,
-  PLAYER_HAND_POSITION_NAME_0,
-  PLAYER_HAND_POSITION_NAME_1,
-  PLAYER_HAND_POSITION_NAME_2,
-  PLAYER_HAND_POSITION_NAME_3,
-  PLAYER_HAND_POSITION_NAME_4,
 } from '../constants'
-import Factory from '../Factory'
 import BaseSystem from './BaseSystem'
 
 export default class HandSystem extends BaseSystem {
-  inputManager: Map<Entity, Phaser.Input.Keyboard.Key | undefined> = new Map()
-
-  create() {
-    super.create()
-    const frame = this.gameObjectFactory.rectangle(
-      8,
-      8,
-      CANVAS_WIDTH,
-      CANVAS_HEIGHT,
-      0,
-      0,
-    )
-    frame.setDisplayOrigin(0, 0)
-    frame.setStrokeStyle(8, FRAME_COLOR)
-  }
-
   // summonCreature(card: Entity, player: Entity): Entity {
   //   const isOpponent = this.entityManager.getEntityByTag('opponent') === player
   //   const creature = this.factory?.creature(
@@ -100,35 +77,24 @@ export default class HandSystem extends BaseSystem {
   draw(entity: Entity, deck: Deck, hand: Hand) {
     if (!deck.drawList.length || hand.full) return
 
-    deck.drawList.forEach(card => {
-      const creature = this.factory?.card(card, entity, hand.cards.length)
-      hand.add(creature || -1)
+    deck.drawList.forEach(cardName => {
+      const card = this.factory?.card(cardName, entity, hand.cards.length)
+      hand.add(card || -1)
     })
   }
 
-  checkIfCardWasSelected(mouseInput: MouseInput, hand: Hand) {
-    const responsePositions = mouseInput.flush()
+  selectCardIfWasClicked(hand: Hand) {
+    // percorre a mão procurando por cartas que tenham sido clicadas
+    // e as seleciona
 
-    // verifica se um clique aconteceu em alguma carta na mão da entidade
-    // e a marca como selecionada
-    Object.keys(responsePositions).forEach(name => {
-      switch (name) {
-        case PLAYER_HAND_POSITION_NAME_0:
-          hand.selected = hand.cards[0]
-          break
-        case PLAYER_HAND_POSITION_NAME_1:
-          hand.selected = hand.cards[1]
-          break
-        case PLAYER_HAND_POSITION_NAME_2:
-          hand.selected = hand.cards[2]
-          break
-        case PLAYER_HAND_POSITION_NAME_3:
-          hand.selected = hand.cards[3]
-          break
-        case PLAYER_HAND_POSITION_NAME_4:
-          hand.selected = hand.cards[4]
-          break
-      }
+    hand.cards.forEach(card => {
+      const mouse = this.entityManager.getComponentOfClass(
+        MouseInput,
+        card,
+      ) as MouseInput
+
+      if (mouse.x < 0 || mouse.y < 0) return
+      hand.selected = card
     })
   }
 
@@ -139,14 +105,10 @@ export default class HandSystem extends BaseSystem {
 
     handEntities.forEach(entity => {
       const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
-      const mouseInput = this.entityManager.getComponentOfClass(
-        MouseInput,
-        entity,
-      ) as MouseInput
       const deck = this.entityManager.getComponentOfClass(Deck, entity) as Deck
 
-      // checa o input e marca as cartas selecionadas
-      if (mouseInput) this.checkIfCardWasSelected(mouseInput, hand)
+      // checa o mouse e marca as cartas selecionadas
+      if (hand) this.selectCardIfWasClicked(hand)
       if (deck) this.draw(entity, deck, hand)
     })
   }

@@ -11,7 +11,6 @@ import CreatureAttributes from '../Components/CreatureAttributes'
 import LaneSelection from '../Components/LaneSelection'
 import LanePosition from '../Components/LanePosition'
 import Renderer from '../Components/Renderer'
-import MouseInput from '../Components/MouseInput'
 import getHandCardsPositions from '../Utils/getHandCardsPositions'
 import {
   PLAYER_CARD_SIZE,
@@ -34,6 +33,8 @@ import {
   LANE_PROPORTION_FACTOR,
   LANE_COLOR,
 } from '../constants'
+import MouseInput from '../Components/MouseInput'
+import MouseInputSystem from '../Systems/MouseInputSystem'
 
 let instance: Factory
 export default class Factory {
@@ -106,11 +107,6 @@ export default class Factory {
       },
     }
 
-    this.factory
-      .rectangle(laneX, laneY, laneWidth, laneHeight, LANE_COLOR)
-      .setDisplayOrigin(0, 0)
-
-    this.entityManager.addComponent(new MouseInput(clickAreaMap), player)
     this.entityManager.addComponent(new Mana(12, 0), player)
     this.entityManager.addComponent(new Health(1000), player)
     this.entityManager.addComponent(new Deck(cards), player)
@@ -143,27 +139,32 @@ export default class Factory {
 
   card(name: string, entity: Entity, handPosition: number): Entity {
     const isPlayer = entity === this.entityManager.getEntityByTag('player')
-    const size = isPlayer ? PLAYER_CARD_SIZE : OPPONENT_CARD_SIZE
-    const color = isPlayer ? PLAYER_CARD_COLOR : OPPONENT_CARD_COLOR
-    const displayOrigin = isPlayer
-      ? PLAYER_HAND_DISPLAY_ORIGIN
-      : OPPONENT_HAND_DISPLAY_ORIGIN
 
     const card = this.entityManager.createEntity()
 
-    const { type, mana }: { type: CARD_TYPE; mana: number } = CARDS[name]
-
-    this.entityManager.addComponent(new CardDescriptor(name, mana, type), card)
-    const renderer = new Renderer(this.factory.rectangle())
-    this.entityManager.addComponent(renderer, card)
-
+    // renderer
+    const displayOrigin = isPlayer
+      ? PLAYER_HAND_DISPLAY_ORIGIN
+      : OPPONENT_HAND_DISPLAY_ORIGIN
+    const color = isPlayer ? PLAYER_CARD_COLOR : OPPONENT_CARD_COLOR
+    const size = isPlayer ? PLAYER_CARD_SIZE : OPPONENT_CARD_SIZE
+    const [originX, originY] = displayOrigin
     const [width, height] = size
+    const renderer = new Renderer(this.factory.rectangle())
+    renderer.sprite.setPosition(handPosition * width * 2 + originX, originY)
     renderer.sprite.setDisplaySize(width, height)
     renderer.sprite.setFillStyle(color)
+    this.entityManager.addComponent(renderer, card)
 
-    const [originX, originY] = displayOrigin
-    renderer.sprite.setPosition(handPosition * width * 2 + originX, originY)
+    // card descriptor
+    const { type, mana }: { type: CARD_TYPE; mana: number } = CARDS[name]
+    this.entityManager.addComponent(new CardDescriptor(name, mana, type), card)
 
+    // mouse
+    const mouse = new MouseInput()
+    this.entityManager.addComponent(mouse, card)
+
+    MouseInputSystem.bindMouseClickEvent(renderer, mouse)
     return card
   }
 
