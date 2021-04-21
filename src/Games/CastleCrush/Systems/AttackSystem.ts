@@ -74,9 +74,7 @@ export default class AtackSystem extends BaseSystem {
     })
   }
 
-  update(dt: number) {
-    if (this.clock) return
-
+  clock() {
     const player = this.entityManager.getEntityByTag('player') || -1
     const opponent = this.entityManager.getEntityByTag('opponent') || -1
     this.checkIfCreaturesAreAttacking(player)

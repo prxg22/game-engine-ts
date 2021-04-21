@@ -1,9 +1,10 @@
 import Phaser, { GameObjects } from 'phaser'
-import { Entity, System } from '../../../Core'
+import { Entity } from '../../../Core'
 import MouseInput from '../Components/MouseInput'
 import Renderer from '../Components/Renderer'
+import BaseSystem from './BaseSystem'
 
-export default class MouseInputSystem extends System {
+export default class MouseInputSystem extends BaseSystem {
   update() {}
 
   create() {

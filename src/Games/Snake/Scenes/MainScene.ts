@@ -19,14 +19,14 @@ class MainScene extends Scene {
   preload() {
     this.load.spritesheet('snake', Assets.snake8bit, {
       frameWidth: 8,
-      frameHeight: 8
+      frameHeight: 8,
     })
   }
 
   create() {
     this.text = this.add.text(CANVAS_WIDTH + 16, 0, '', {
       fontSize: '10px',
-      color: '#fff'
+      color: '#fff',
     })
     this.factory = new Factory(this.entityManager, this.add, this.input)
     this.systems = [
@@ -34,7 +34,7 @@ class MainScene extends Scene {
       new InputSystem(this.entityManager, this.add, this.input),
       new CollideSystem(this.entityManager, this.add, this.input),
       new PhysicsSystem(this.entityManager, this.add, this.input),
-      new RenderSystem(this.entityManager, this.add, this.input)
+      new RenderSystem(this.entityManager, this.add, this.input),
     ]
     this.factory.frame()
     this.factory.apple()
@@ -45,7 +45,7 @@ class MainScene extends Scene {
 
 const debugComponents = (...arr: Component[][]): string => {
   return arr
-    .map((componentArray) => {
+    .map(componentArray => {
       return componentArray
         .map((component: Component) => {
           let msg = component.toString()

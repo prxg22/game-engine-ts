@@ -12,17 +12,18 @@ import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
-// import AttackSystem from '../Systems/AttackSystem'
+import AttackSystem from '../Systems/AttackSystem'
 import MouseInputSystem from '../Systems/MouseInputSystem'
 import Hand from '../Components/Hand'
 import ManaSystem from '../Systems/ManaSystem'
 import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
+import BaseScene from './BaseScene'
 
 const TICK = 1000
 let instance: MainScene
-export default class MainScene extends Scene {
-  facotry?: Factory
+export default class MainScene extends BaseScene {
+  factory?: Factory
   text?: GameObjects.Text
 
   constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
@@ -34,11 +35,6 @@ export default class MainScene extends Scene {
   }
 
   create() {
-    // frame
-    // const frame = this.add.rectangle(8, 8, CANVAS_WIDTH, CANVAS_HEIGHT, 0, 0)
-    // frame.setDisplayOrigin(0, 0)
-    // frame.setStrokeStyle(8, FRAME_COLOR)
-
     // debug text object
     this.text = this.add.text(CANVAS_WIDTH + 16, 0, ``, {
       color: '#fff',
@@ -46,10 +42,22 @@ export default class MainScene extends Scene {
     })
 
     // create entities
-    this.facotry = new Factory(this.entityManager, this.add, this.input)
-    this.facotry.player()
-    this.facotry.opponent()
-    this.facotry.lanes()
+    this.factory = new Factory(this.entityManager, this.add, this.input)
+    const player = this.factory.player()
+    const opponent = this.factory.opponent()
+    this.factory.lanes()
+
+    // mock oponents creatures
+    Array(Phaser.Math.Between(2, 6))
+      .fill(0)
+      .forEach(() => {
+        this.factory?.mockCreature(opponent)
+      })
+    Array(Phaser.Math.Between(2, 6))
+      .fill(0)
+      .forEach(() => {
+        this.factory?.mockCreature(player)
+      })
 
     // boot systems
     this.systems = [
@@ -60,13 +68,12 @@ export default class MainScene extends Scene {
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
       new LaneMovementSystem(this.entityManager, this.add, this.input),
-      // new AttackSystem(this.entityManager, this.add, this.input),
+      new AttackSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()
   }
 
-  private t: number = 0
   update(time: number, dt: number) {
     const opponent = this.entityManager?.getEntityByTag('opponent')
     const player = this.entityManager?.getEntityByTag('player')
@@ -82,7 +89,7 @@ export default class MainScene extends Scene {
     ) as Hand
 
     // this.debugEntities(player, ...lanes)
-    super.update(dt)
+    super.update(time, dt)
   }
 
   debugEntities(...entities: (Entity | string)[]): string {

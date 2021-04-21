@@ -1,4 +1,5 @@
 import { System } from '../../../Core'
+import MainScene from '../../CastleCrush/Scenes/MainScene'
 import Mana from '../Components/Mana'
 import {
   BACKCOVER_CARD_COLOR,
@@ -19,12 +20,14 @@ class ManaSystem extends BaseSystem {
     })
   }
 
-  update() {
+  clock(dt: number) {
     const players = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Mana],
     )
-    if (this.clock) this.countTicks += 1
-    if (this.countTicks < 100) return
+
+    this.countTicks += 1
+    if (this.countTicks < 4) return
+    this.countTicks += 0
 
     players.forEach(player => {
       const mana = this.entityManager.getComponentOfClass(Mana, player) as Mana
@@ -32,10 +35,11 @@ class ManaSystem extends BaseSystem {
       if (!mana) return
 
       mana.increment()
-      if (!(this.countTicks % 20)) mana.incrementMax()
+      if (!(this.countTicks % 4)) mana.incrementMax()
     })
     this.countTicks = 0
   }
+
   render() {
     const mana = this.entityManager.getComponentOfClass(
       Mana,

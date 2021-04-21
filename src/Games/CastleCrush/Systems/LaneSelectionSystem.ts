@@ -76,7 +76,6 @@ export default class LaneSelectionSystem extends BaseSystem {
   }
 
   update(dt: number) {
-    super.update(dt)
     const player = this.entityManager.getEntityByTag('player') || -1
 
     const laneSelection = this.entityManager.getComponentOfClass(

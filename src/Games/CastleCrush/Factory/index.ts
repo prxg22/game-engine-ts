@@ -7,7 +7,9 @@ import Mana from '../Components/Mana'
 import Hand from '../Components/Hand'
 import CreatureCollection from '../Components/CreatureCollection'
 import CardDescriptor, { CARD_TYPE } from '../Components/CardDescriptor'
-import CreatureAttributes from '../Components/CreatureAttributes'
+import CreatureAttributes, {
+  CREATURE_STATUS,
+} from '../Components/CreatureAttributes'
 import LaneSelection from '../Components/LaneSelection'
 import LanePosition from '../Components/LanePosition'
 import Renderer from '../Components/Renderer'
@@ -26,6 +28,9 @@ import {
   LANES,
   CREATURE_SIZE,
   CREATURE_COLOR_MOVING,
+  LANE_SIZE,
+  P1_CREATURE_COLOR_MOVING,
+  P2_CREATURE_COLOR_MOVING,
 } from '../constants'
 import MouseInput from '../Components/MouseInput'
 import MouseInputSystem from '../Systems/MouseInputSystem'
@@ -102,9 +107,52 @@ export default class Factory {
     this.entityManager.addComponent(new Health(1000), opponent)
     this.entityManager.addComponent(new Deck(cards), opponent)
     this.entityManager.addComponent(new Hand(), opponent)
-    this.entityManager.addComponent(new CreatureCollection(), opponent)
+    const creatureCollection = new CreatureCollection()
+    this.entityManager.addComponent(creatureCollection, opponent)
 
     return opponent
+  }
+
+  mockCreature(entity: Entity) {
+    const isPlayer = entity === this.entityManager.getEntityByTag('player')
+    const creatureCollection = this.entityManager.getComponentOfClass(
+      CreatureCollection,
+      entity,
+    ) as CreatureCollection
+
+    // create random cards
+    const card = this.card(`creature-${Phaser.Math.Between(1, 4)}`, entity, 0)
+
+    // create a creature
+    const creature = this.creature(
+      card,
+      Phaser.Math.Between(0, 2),
+      Phaser.Math.Between(
+        isPlayer ? 0 : LANE_SIZE / 2,
+        isPlayer ? LANE_SIZE / 2 : LANE_SIZE,
+      ),
+    )
+
+    // push creature in owner's creatureCollection
+    creatureCollection?.entities.push(creature)
+
+    const creatureAttributes = this.entityManager.getComponentOfClass(
+      CreatureAttributes,
+      creature,
+    ) as CreatureAttributes
+
+    const renderer = this.entityManager.getComponentOfClass(
+      Renderer,
+      creature,
+    ) as Renderer<GameObjects.Shape>
+
+    creatureAttributes.status = CREATURE_STATUS.MOVING
+
+    renderer.sprite.setFillStyle(
+      isPlayer ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING,
+    )
+    // since we will not use it, remove card entity
+    this.entityManager.removeEntity(card)
   }
 
   lanes(): Entity[] {
@@ -172,14 +220,12 @@ export default class Factory {
     return card
   }
 
-  creature(card: Entity, lane: number, position?: number): Entity {
+  creature(card: Entity, lane: number, position: number = 0): Entity {
     const creature = this.entityManager.createEntity()
     const descriptor = this.entityManager.getComponentOfClass(
       CardDescriptor,
       card,
     ) as CardDescriptor
-
-    const mainScene = MainScene.instance()
 
     const {
       atk,
@@ -209,16 +255,7 @@ export default class Factory {
       CREATURE_COLOR_MOVING,
     )
 
-    // mainScene.debug(
-    //   `
-    //   factry.cards:
-    //   entity: ${card} - name: ${descriptor.name} -
-    //   position: ${position}
-    //   displayX: ${displayX} - displayY: ${displayY}
-    //   `,
-    // )
     this.entityManager.addComponent(new Renderer(sprite), creature)
-
     return creature
   }
 }

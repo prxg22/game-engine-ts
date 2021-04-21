@@ -15,7 +15,7 @@ abstract class Scene extends Phaser.Scene {
     this.systems.forEach(s => s.create())
   }
 
-  update(dt?: number, time?: number) {
+  update(time?: number, dt?: number) {
     this.systems.forEach(s => {
       s.update(dt)
     })

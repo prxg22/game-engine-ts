@@ -1,9 +1,10 @@
 import { GameObjects } from 'phaser'
 import { Entity, EntityManager } from '../../../Core'
-import CreatureCreatureAttributes, {
+import CreatureAttributes, {
   CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
+import Health from '../Components/Health'
 import LanePosition from '../Components/LanePosition'
 import Renderer from '../Components/Renderer'
 import {
@@ -14,58 +15,55 @@ import {
   LANE_DISPLAY_SIZE,
   LANE_MARGIN_SIZE,
   CREATURE_SIZE,
+  CREATURE_COLOR_MOVING,
+  CREATURE_COLOR_ATTACKING,
+  P1_CREATURE_COLOR_ATTACKING,
+  P2_CREATURE_COLOR_ATTACKING,
+  P1_CREATURE_COLOR_MOVING,
+  P2_CREATURE_COLOR_MOVING,
 } from '../constants'
 import MainScene from '../Scenes/MainScene'
 import BaseSystem from './BaseSystem'
 
 export default class LaneMovementSystem extends BaseSystem {
-  constructor(
-    entityManager: EntityManager,
-    gameObjectFactory: Phaser.GameObjects.GameObjectFactory,
-    inputPlugin: Phaser.Input.InputPlugin,
-  ) {
-    super(entityManager, gameObjectFactory, inputPlugin)
-  }
-
-  moveCreatures(player: Entity, isOpoonent: boolean = false) {
+  moveCreatures(owner: Entity) {
+    const isPlayer = owner === this.entityManager.getEntityByTag('player')
     const playerCreatures = this.entityManager.getComponentOfClass(
       CreatureCollection,
-      player,
+      owner,
     ) as CreatureCollection
 
     playerCreatures.entities.forEach(creature => {
       const creatureAttributes = this.entityManager.getComponentOfClass(
-        CreatureCreatureAttributes,
+        CreatureAttributes,
         creature,
-      ) as CreatureCreatureAttributes
+      ) as CreatureAttributes
 
       if (creatureAttributes.status === CREATURE_STATUS.ATACKING) return
       creatureAttributes.status = CREATURE_STATUS.MOVING
 
-      const lanePostion = this.entityManager.getComponentOfClass(
+      const lanePosition = this.entityManager.getComponentOfClass(
         LanePosition,
         creature,
       ) as LanePosition
 
-      if (creatureAttributes.status === CREATURE_STATUS.MOVING && !isOpoonent)
-        lanePostion.position += creatureAttributes.speed
+      if (creatureAttributes.status === CREATURE_STATUS.MOVING && isPlayer)
+        lanePosition.position += creatureAttributes.speed
       else if (creatureAttributes.status === CREATURE_STATUS.MOVING)
-        lanePostion.position -= creatureAttributes.speed
+        lanePosition.position -= creatureAttributes.speed
 
-      lanePostion.position = Math.max(
+      lanePosition.position = Math.max(
         0,
-        Math.min(lanePostion.position, LANE_SIZE),
+        Math.min(lanePosition.position, LANE_SIZE),
       )
     })
   }
 
-  update(dt: number) {
-    if (this.clock) return
-
+  clock() {
     const player = this.entityManager.getEntityByTag('player') || -1
     const opponent = this.entityManager.getEntityByTag('opponent') || -1
     this.moveCreatures(player)
-    this.moveCreatures(opponent, true)
+    this.moveCreatures(opponent)
   }
 
   render(dt: number) {
@@ -73,31 +71,79 @@ export default class LaneMovementSystem extends BaseSystem {
     const opponent: Entity = this.entityManager.getEntityByTag('opponent') || -1
 
     ;[player, opponent].forEach(entity => {
+      const isPlayer = entity === this.entityManager.getEntityByTag('player')
       const creatureCollection = this.entityManager.getComponentOfClass(
         CreatureCollection,
         entity,
       ) as CreatureCollection
 
-      // MainScene.instance().debugComponent(creatureCollection)
+      let msg = `
+        LaneMovementySystem.render:
+        creatureCollection: ${creatureCollection.entities}
+        `
       creatureCollection.entities.forEach(creature => {
         const lanePosition = this.entityManager.getComponentOfClass(
           LanePosition,
           creature,
         ) as LanePosition
-        const renderer = this.entityManager.getComponentOfClass(
+
+        const creatureAttributes = this.entityManager.getComponentOfClass(
+          CreatureAttributes,
+          creature,
+        ) as CreatureAttributes
+
+        const { sprite } = this.entityManager.getComponentOfClass(
           Renderer,
           creature,
         ) as Renderer<GameObjects.Shape>
 
-        if (!lanePosition) return
+        const health = this.entityManager.getComponentOfClass(
+          Health,
+          creature,
+        ) as Health
 
-        const [displayX, displayY] =
+        if (!lanePosition) return
+        msg += `
+            -- creature ${creature} --
+            name: ${creatureAttributes.name} - hp: ${health.current}/${health.max} - status: ${creatureAttributes.status}
+            lane: ${lanePosition.lane} - position: ${lanePosition.position}
+            sprite: {x: ${sprite.x}, y: ${sprite.y}}
+
+          `
+        if (creatureAttributes.status === CREATURE_STATUS.ATACKING) {
+          sprite.setFillStyle(
+            isPlayer
+              ? P1_CREATURE_COLOR_ATTACKING
+              : P2_CREATURE_COLOR_ATTACKING,
+          )
+
+          return
+        }
+
+        sprite.setFillStyle(
+          isPlayer ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING,
+        )
+
+        const [displayX = 0, displayY] =
           LaneMovementSystem.calculateDisplayPosition(lanePosition) || []
 
-        if (!displayX || !displayY) return
+        const dx = (dt / CLOCK) * creatureAttributes.speed * (isPlayer ? 1 : -1)
 
-        renderer.sprite.setPosition(displayX, displayY)
+        if (
+          !displayX ||
+          !displayY ||
+          (isPlayer && sprite.x >= displayX) ||
+          (!isPlayer && sprite.x <= displayX)
+        )
+          return
+
+        sprite.setPosition(
+          Math.max(0, Math.min(sprite.x + dx, displayX)),
+          displayY,
+        )
       })
+
+      MainScene.instance().debug(msg)
     })
   }
 
@@ -112,14 +158,6 @@ export default class LaneMovementSystem extends BaseSystem {
       baseY +
       (baseHeight / 2 - CREATURE_SIZE / 2) -
       (baseHeight + LANE_MARGIN_SIZE) * lanePosition.lane * 2
-    // MainScene.instance().debug(
-    //   `
-    //   LaneMovementySystem.calculateDisplayPosition:
-    //   lane: ${lanePosition.lane}  position: ${lanePosition.position}
-    //   baseX: ${baseX} baseY: ${baseY} baseWidth: ${baseWidth}
-    //   display: ${[displayX, displayY].join('-\t')}
-    //   `,
-    // )
 
     return [displayX, displayY]
   }

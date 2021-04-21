@@ -42,13 +42,6 @@ export default class SetCardSystem extends BaseSystem {
       player,
     ) as CreatureCollection
 
-    // MainScene.instance().debug(
-    //   `
-    //   LaneMovementySystem.upload:
-    //   hand: [${hand.selected}] - ${hand.cards}
-    //   creatureCollection: ${creatureCollection.entities}
-    //   `,
-    // )
     const selected = hand.selected
     renderer.sprite.setVisible(false)
     renderer.sprite.destroy()
@@ -60,7 +53,6 @@ export default class SetCardSystem extends BaseSystem {
     )
     if (!creature || !creatureCollection) return
     creatureCollection.entities.push(creature || -1)
-    MainScene.instance().debugEntities(card, creature || -1, player)
     this.entityManager.removeEntity(selected)
   }
 

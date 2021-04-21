@@ -16,10 +16,10 @@ export const SNAKE_COLOR = 0x00ff00
 export const NEUTRAL = 0xffffff
 
 // inputs
-export const KEY_UP = Phaser.Input.Keyboard.KeyCodes.W
-export const KEY_LEFT = Phaser.Input.Keyboard.KeyCodes.A
-export const KEY_DOWN = Phaser.Input.Keyboard.KeyCodes.S
-export const KEY_RIGHT = Phaser.Input.Keyboard.KeyCodes.D
+export const KEY_UP = Phaser.Input.Keyboard.KeyCodes.UP
+export const KEY_LEFT = Phaser.Input.Keyboard.KeyCodes.LEFT
+export const KEY_DOWN = Phaser.Input.Keyboard.KeyCodes.DOWN
+export const KEY_RIGHT = Phaser.Input.Keyboard.KeyCodes.RIGHT
 
 // sprite frames
 export const SNAKE_FRAME_UP = 49
