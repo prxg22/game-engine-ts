@@ -1,4 +1,4 @@
-import { Component, Entity, EntityManager, System } from '../../../Core'
+import { Entity, EntityManager, System } from '../../../Core'
 import CardDescriptor from '../Components/CardDescriptor'
 import Hand from '../Components/Hand'
 import { LaneReference } from '../Components/LanePosition'
@@ -7,17 +7,11 @@ import LaneSelection, {
 } from '../Components/LaneSelection'
 import Mana from '../Components/Mana'
 import MouseInput from '../Components/MouseInput'
-import {
-  LANES,
-  LANE_BASE_SIZE,
-  LANE_POSITION_NAME_0,
-  LANE_POSITION_NAME_1,
-  LANE_POSITION_NAME_2,
-  MAX_LANE_POSITION,
-} from '../constants'
+import { LANES, LANE_BASE_SIZE, MAX_LANE_POSITION } from '../constants'
+import BaseSystem from './BaseSystem'
 
 let instance: LaneSelectionSystem
-export default class LaneSelectionSystem extends System {
+export default class LaneSelectionSystem extends BaseSystem {
   constructor(
     entityManager: EntityManager,
     gameObjectFactory: Phaser.GameObjects.GameObjectFactory,
@@ -82,6 +76,7 @@ export default class LaneSelectionSystem extends System {
   }
 
   update(dt: number) {
+    super.update(dt)
     const player = this.entityManager.getEntityByTag('player') || -1
 
     const laneSelection = this.entityManager.getComponentOfClass(
@@ -117,12 +112,4 @@ export default class LaneSelectionSystem extends System {
     // seleciona a lane no componente LanseSelection
     this.selectLane(player, laneReference)
   }
-
-  //   private getLanePositionFromScreen(
-  //     lane: number,
-  //     screeX: number,
-  //     screenY: number,
-  //   ): LaneReference {
-  //     return { lane: 0, position: 0 }
-  //   }
 }

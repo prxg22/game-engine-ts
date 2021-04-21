@@ -3,11 +3,11 @@ import { CLOCK } from '../constants'
 import Factory from '../Factory'
 
 export default class BaseSystem extends System {
-  time: number = 0
+  dtClock: number = 0
   factory?: Factory
 
   get clock(): boolean {
-    return this.time < CLOCK
+    return this.dtClock < CLOCK
   }
 
   create() {
@@ -16,8 +16,8 @@ export default class BaseSystem extends System {
   }
 
   update(dt: number) {
-    this.time += dt
-    if (this.time < CLOCK) return
-    this.time = 0
+    this.dtClock += dt
+    if (this.dtClock < CLOCK) return
+    this.dtClock = 0
   }
 }
