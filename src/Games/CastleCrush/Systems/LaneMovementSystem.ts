@@ -1,24 +1,23 @@
-import { Entity, System } from '../../../Core'
+import { Entity } from '../../../Core'
 import CreatureCreatureAttributes, {
-  CREATURE_STATUS
+  CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
 import { MAX_LANE_POSITION, TICK, LANES } from '../constants'
+import BaseSystem from './BaseSystem'
 
-export default class LaneMovementSystem extends System {
-  private time: number = 0
-
+export default class LaneMovementSystem extends BaseSystem {
   moveCreatures(player: Entity, isOpoonent: boolean = false) {
     const playerCreatures = this.entityManager.getComponentOfClass(
       CreatureCollection,
-      player
+      player,
     ) as CreatureCollection
 
-    playerCreatures.entities.forEach((creature) => {
+    playerCreatures.entities.forEach(creature => {
       const creatureAttributes = this.entityManager.getComponentOfClass(
         CreatureCreatureAttributes,
-        creature
+        creature,
       ) as CreatureCreatureAttributes
 
       if (creatureAttributes.status === CREATURE_STATUS.ATACKING) return
@@ -26,7 +25,7 @@ export default class LaneMovementSystem extends System {
 
       const lanePostion = this.entityManager.getComponentOfClass(
         LanePosition,
-        creature
+        creature,
       ) as LanePosition
 
       if (creatureAttributes.status === CREATURE_STATUS.MOVING && !isOpoonent)
@@ -36,15 +35,13 @@ export default class LaneMovementSystem extends System {
 
       lanePostion.position = Math.max(
         0,
-        Math.min(lanePostion.position, MAX_LANE_POSITION)
+        Math.min(lanePostion.position, MAX_LANE_POSITION),
       )
     })
   }
 
   update(dt: number) {
-    this.time += dt
-    if (this.time < TICK) return
-    this.time = 0
+    if (this.tick) return
 
     const player = this.entityManager.getEntityByTag('player') || -1
     const opponent = this.entityManager.getEntityByTag('opponent') || -1

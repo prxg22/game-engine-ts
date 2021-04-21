@@ -1,27 +1,26 @@
 import { System } from '../../../Core'
-import ManaComponent from '../Components/ManaComponent'
+import Mana from '../Components/Mana'
+import BaseSystem from './BaseSystem'
 
-class ManaSystem extends System {
-  private lastTick: number = 0
-  update(tick: number) {
+class ManaSystem extends BaseSystem {
+  countTicks: number = 0
+
+  update() {
+    if (this.tick) this.countTicks += 1
+    if (this.countTicks < 100) return
     const players = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
-      [ManaComponent]
+      [Mana],
     )
 
-    players.forEach((player) => {
-      const mana = this.entityManager.getComponentOfClass<ManaComponent>(
-        ManaComponent,
-        player
-      )
+    players.forEach(player => {
+      const mana = this.entityManager.getComponentOfClass(Mana, player) as Mana
 
       if (!mana) return
 
-      if (!(tick % 3)) mana.increment()
-      if (tick - this.lastTick >= mana.max) {
-        this.lastTick = tick
-        mana.incrementMax()
-      }
+      mana.increment()
+      if (!(this.countTicks % 20)) mana.incrementMax()
     })
+    this.countTicks = 0
   }
 }
 

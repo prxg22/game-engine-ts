@@ -23,6 +23,10 @@ export const OPPONENT_CARD_COLOR = 0xff00ff
 export const HAND_SELECTED_CARD_COLOR = 0x00ff00
 export const FRAME_COLOR = 0xff00ff
 
+export const LANE_POSITION_NAME_0 = 'lane0'
+export const LANE_POSITION_NAME_1 = 'lane1'
+export const LANE_POSITION_NAME_2 = 'lane2'
+
 export const PLAYER_HAND_POSITION_NAME_0 = 'hand0'
 export const PLAYER_HAND_POSITION_NAME_1 = 'hand1'
 export const PLAYER_HAND_POSITION_NAME_2 = 'hand2'

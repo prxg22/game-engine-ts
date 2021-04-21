@@ -6,7 +6,6 @@ import Health from '../Components/Health'
 import Mana from '../Components/Mana'
 import Hand from '../Components/Hand'
 import CreatureCollection from '../Components/CreatureCollection'
-import Input from '../Components/Input'
 import CardDescriptor, { CARD_TYPE } from '../Components/CardDescriptor'
 import {
   PLAYER_CARD_SIZE,
@@ -22,8 +21,8 @@ import {
   PLAYER_HAND_POSITION_NAME_4,
 } from '../constants'
 import CreatureAttributes from '../Components/CreatureAttributes'
-import LanePosition from '../Components/LanePosition'
 import LaneSelection from '../Components/LaneSelection'
+import LanePosition from '../Components/LanePosition'
 import Renderer from '../Components/Renderer'
 import MouseInput from '../Components/MouseInput'
 import getHandCardsPositions from '../Utils/getHandCardsPositions'
@@ -76,7 +75,6 @@ export default class Factory {
     }
 
     this.entityManager.addComponent(new MouseInput(clickAreaMap), player)
-
     this.entityManager.addComponent(new Mana(12, 0), player)
     this.entityManager.addComponent(new Health(1000), player)
     this.entityManager.addComponent(new Deck(cards), player)
@@ -84,6 +82,7 @@ export default class Factory {
     this.entityManager.addComponent(new LaneSelection(), player)
     this.entityManager.addComponent(new CreatureCollection(), player)
 
+    // this.entityManager.addComponent(new LaneSelection(), player)
     // this.entityManager.addComponent(
     //   new Input([
     //     this.input.keyboard.addKey(HAND_ONE_KEY),
@@ -94,8 +93,6 @@ export default class Factory {
     //   ]),
     //   player,
     // )
-
-    // this.entityManager.addComponent(new Renderer(this.factory.), player)
 
     return player
   }
@@ -116,8 +113,6 @@ export default class Factory {
     this.entityManager.addComponent(new Deck(cards), opponent)
     this.entityManager.addComponent(new Hand(), opponent)
     this.entityManager.addComponent(new CreatureCollection(), opponent)
-
-    // this.entityManager.addComponent(new Renderer(this.factory.), opponent)
 
     return opponent
   }

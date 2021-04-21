@@ -1,6 +1,5 @@
 import { GameObjects } from 'phaser'
 import { Component, Entity, Scene } from '../../../Core'
-import CreatureCollection from '../Components/CreatureCollection'
 import Renderer from '../Components/Renderer'
 import {
   CANVAS_WIDTH,
@@ -10,11 +9,12 @@ import {
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
-import LaneMovementSystem from '../Systems/LaneMovementSystem'
-import AttackSystem from '../Systems/AttackSystem'
+// import LaneMovementSystem from '../Systems/LaneMovementSystem'
+// import AttackSystem from '../Systems/AttackSystem'
 import MouseInputSystem from '../Systems/MouseInputSystem'
 import Hand from '../Components/Hand'
 import MouseInput from '../Components/MouseInput'
+import ManaSystem from '../Systems/ManaSystem'
 
 const TICK = 1000
 
@@ -41,11 +41,12 @@ export default class MainScene extends Scene {
 
     // boot systems
     this.systems = [
-      // new AttackSystem(this.entityManager, this.add, this.input),
-      // new LaneMovementSystem(this.entityManager, this.add, this.input),
       new MouseInputSystem(this.entityManager, this.add, this.input),
       new DrawSystem(this.entityManager, this.add, this.input),
+      new ManaSystem(this.entityManager, this.add, this.input),
       new HandSystem(this.entityManager, this.add, this.input),
+      // new AttackSystem(this.entityManager, this.add, this.input),
+      // new LaneMovementSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()

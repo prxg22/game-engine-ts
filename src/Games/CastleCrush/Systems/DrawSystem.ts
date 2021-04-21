@@ -1,16 +1,9 @@
-import { Entity, System } from '../../../Core'
 import Deck from '../Components/Deck'
-import { TICK } from '../constants'
-import Factory from '../Factory'
+import BaseSystem from './BaseSystem'
 
-class DrawSystem extends System {
-  private factory?: Factory
-  private time: number = 0
-
+class DrawSystem extends BaseSystem {
   create() {
-    const factory = Factory.instance
-    this.factory = factory
-
+    super.create()
     const deckEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Deck],
     )
@@ -25,9 +18,8 @@ class DrawSystem extends System {
   }
 
   update(dt: number) {
-    this.time += dt
-    if (this.time < TICK) return
-    this.time = 0
+    super.update(dt)
+    if (this.tick) return
 
     const entitiesWithHandAndDeck = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Deck],

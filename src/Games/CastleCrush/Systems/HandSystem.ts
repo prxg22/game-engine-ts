@@ -22,16 +22,13 @@ import {
   PLAYER_HAND_POSITION_NAME_4,
 } from '../constants'
 import Factory from '../Factory'
+import BaseSystem from './BaseSystem'
 
-export default class HandSystem extends System {
+export default class HandSystem extends BaseSystem {
   inputManager: Map<Entity, Phaser.Input.Keyboard.Key | undefined> = new Map()
-  private factory?: Factory
-  private time: number = 0
 
   create() {
-    const factory = Factory.instance
-    this.factory = factory
-
+    super.create()
     const frame = this.gameObjectFactory.rectangle(
       8,
       8,
@@ -135,7 +132,7 @@ export default class HandSystem extends System {
     })
   }
 
-  update(dt: number) {
+  update() {
     const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Hand],
     )
@@ -172,6 +169,7 @@ export default class HandSystem extends System {
           Renderer,
           card,
         ) as Renderer<Phaser.GameObjects.Shape>
+
         const displayOrigin = isPlayer
           ? PLAYER_HAND_DISPLAY_ORIGIN
           : OPPONENT_HAND_DISPLAY_ORIGIN
