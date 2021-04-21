@@ -90,7 +90,7 @@ export default class LaneSelectionSystem extends System {
     ) as LaneSelection
 
     // refresh lane selection
-    this.refreshLaneSelection(laneSelection)
+    LaneSelectionSystem.refreshLaneSelection(laneSelection)
     // checa se houve clique em alguma lane e retorna referencia da lane
     const laneReference = this.getLaneReferenceIfItWasClicked()
     if (!laneReference) return

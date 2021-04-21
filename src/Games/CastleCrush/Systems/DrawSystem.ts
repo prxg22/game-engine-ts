@@ -19,7 +19,7 @@ class DrawSystem extends BaseSystem {
 
   update(dt: number) {
     super.update(dt)
-    if (this.tick) return
+    if (this.clock) return
 
     const entitiesWithHandAndDeck = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Deck],

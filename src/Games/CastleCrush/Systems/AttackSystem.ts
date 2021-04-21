@@ -75,7 +75,7 @@ export default class AtackSystem extends BaseSystem {
   }
 
   update(dt: number) {
-    if (this.tick) return
+    if (this.clock) return
 
     const player = this.entityManager.getEntityByTag('player') || -1
     const opponent = this.entityManager.getEntityByTag('opponent') || -1

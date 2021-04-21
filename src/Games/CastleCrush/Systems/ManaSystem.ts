@@ -6,7 +6,7 @@ class ManaSystem extends BaseSystem {
   countTicks: number = 0
 
   update() {
-    if (this.tick) this.countTicks += 1
+    if (this.clock) this.countTicks += 1
     if (this.countTicks < 100) return
     const players = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Mana],

@@ -6,7 +6,7 @@ export default class BaseSystem extends System {
   time: number = 0
   factory?: Factory
 
-  get tick(): boolean {
+  get clock(): boolean {
     return this.time < CLOCK
   }
 
