@@ -7,35 +7,40 @@ export interface Area {
   height: number
 }
 
-export default class MouseInput extends Component {
-  public areas: Area[]
-  private clickedIndexes: number[] = []
+export interface ResponsiveAreas {
+  [name: string]: Area
+}
 
-  // como convenção vamos utilizar:
-  // - os n (n = HAND_MAX_CARD) primeiros indices para as posições da carta do player
-  // - n + 3 para as lanes
-  constructor(...areas: Area[]) {
+export interface ResponsePosition {
+  [name: string]: number[] | undefined
+}
+
+export default class MouseInput extends Component {
+  private responsePositions: ResponsePosition = {}
+
+  constructor(public responsiveAreas: ResponsiveAreas) {
     super()
-    this.areas = areas
   }
 
-  // retorna o clickedIndexes e o reinicia
-  flush(): number[] {
-    const clickedIndexes = this.clickedIndexes
-    this.clickedIndexes = []
-    return clickedIndexes
+  // retorna a responsePositions e o reinicia
+  flush(): ResponsePosition {
+    const responsePositions = Object.assign({}, this.responsePositions)
+
+    this.responsePositions = {}
+
+    return responsePositions
   }
 
   // verifica se na posição do clique estava uma das áreas requeridas
-  // e a adiciona no clickedIndexes
+  // e a adiciona seu nome na responsePositions
   click(x: number, y: number) {
-    this.areas.forEach((body, index) => {
-      if (!this.clickedOnBody(body, x, y)) return
-      this.clickedIndexes.push(index)
+    Object.entries(this.responsiveAreas).forEach(([name, area]) => {
+      if (!this.clickedOnBody(x, y, area)) return
+      this.responsePositions[name] = [x, y]
     })
   }
 
-  private clickedOnBody(body: Area, x: number, y: number): boolean {
+  private clickedOnBody(x: number, y: number, body: Area): boolean {
     return (
       x >= body.x &&
       x <= body.x + body.width &&

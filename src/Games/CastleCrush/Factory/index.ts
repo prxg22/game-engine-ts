@@ -15,6 +15,11 @@ import {
   OPPONENT_HAND_DISPLAY_ORIGIN,
   PLAYER_CARD_COLOR,
   OPPONENT_CARD_COLOR,
+  PLAYER_HAND_POSITION_NAME_0,
+  PLAYER_HAND_POSITION_NAME_1,
+  PLAYER_HAND_POSITION_NAME_2,
+  PLAYER_HAND_POSITION_NAME_3,
+  PLAYER_HAND_POSITION_NAME_4,
 } from '../constants'
 import CreatureAttributes from '../Components/CreatureAttributes'
 import LanePosition from '../Components/LanePosition'
@@ -62,11 +67,15 @@ export default class Factory {
       height,
     }))
 
-    console.log(handCardsPositions)
-    this.entityManager.addComponent(
-      new MouseInput(...handCardsPositions),
-      player,
-    )
+    const clickAreaMap = {
+      [PLAYER_HAND_POSITION_NAME_0]: handCardsPositions[0],
+      [PLAYER_HAND_POSITION_NAME_1]: handCardsPositions[1],
+      [PLAYER_HAND_POSITION_NAME_2]: handCardsPositions[2],
+      [PLAYER_HAND_POSITION_NAME_3]: handCardsPositions[3],
+      [PLAYER_HAND_POSITION_NAME_4]: handCardsPositions[4],
+    }
+
+    this.entityManager.addComponent(new MouseInput(clickAreaMap), player)
 
     this.entityManager.addComponent(new Mana(12, 0), player)
     this.entityManager.addComponent(new Health(1000), player)

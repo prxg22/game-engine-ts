@@ -15,6 +15,11 @@ import {
   OPPONENT_CARD_SIZE,
   PLAYER_CARD_COLOR,
   OPPONENT_CARD_COLOR,
+  PLAYER_HAND_POSITION_NAME_0,
+  PLAYER_HAND_POSITION_NAME_1,
+  PLAYER_HAND_POSITION_NAME_2,
+  PLAYER_HAND_POSITION_NAME_3,
+  PLAYER_HAND_POSITION_NAME_4,
 } from '../constants'
 import Factory from '../Factory'
 
@@ -104,13 +109,29 @@ export default class HandSystem extends System {
     })
   }
 
-  checkInput(mouseInput: MouseInput, hand: Hand) {
-    const clickedIndexes = mouseInput.flush()
+  checkIfCardWasSelected(mouseInput: MouseInput, hand: Hand) {
+    const responsePositions = mouseInput.flush()
 
     // verifica se um clique aconteceu em alguma carta na mão da entidade
-    clickedIndexes.forEach(index => {
-      if (!hand.cards[index]) return
-      hand.selected = hand.cards[index]
+    // e a marca como selecionada
+    Object.keys(responsePositions).forEach(name => {
+      switch (name) {
+        case PLAYER_HAND_POSITION_NAME_0:
+          hand.selected = hand.cards[0]
+          break
+        case PLAYER_HAND_POSITION_NAME_1:
+          hand.selected = hand.cards[1]
+          break
+        case PLAYER_HAND_POSITION_NAME_2:
+          hand.selected = hand.cards[2]
+          break
+        case PLAYER_HAND_POSITION_NAME_3:
+          hand.selected = hand.cards[3]
+          break
+        case PLAYER_HAND_POSITION_NAME_4:
+          hand.selected = hand.cards[4]
+          break
+      }
     })
   }
 
@@ -127,7 +148,8 @@ export default class HandSystem extends System {
       ) as MouseInput
       const deck = this.entityManager.getComponentOfClass(Deck, entity) as Deck
 
-      if (mouseInput) this.checkInput(mouseInput, hand)
+      // checa o input e marca as cartas selecionadas
+      if (mouseInput) this.checkIfCardWasSelected(mouseInput, hand)
       if (deck) this.draw(entity, deck, hand)
     })
   }

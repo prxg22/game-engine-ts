@@ -22,3 +22,9 @@ export const PLAYER_CARD_COLOR = 0xffff00
 export const OPPONENT_CARD_COLOR = 0xff00ff
 export const HAND_SELECTED_CARD_COLOR = 0x00ff00
 export const FRAME_COLOR = 0xff00ff
+
+export const PLAYER_HAND_POSITION_NAME_0 = 'hand0'
+export const PLAYER_HAND_POSITION_NAME_1 = 'hand1'
+export const PLAYER_HAND_POSITION_NAME_2 = 'hand2'
+export const PLAYER_HAND_POSITION_NAME_3 = 'hand3'
+export const PLAYER_HAND_POSITION_NAME_4 = 'hand4'
