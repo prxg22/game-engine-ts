@@ -8,13 +8,13 @@ import Renderer from '../Components/Renderer'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
-  HAND_SELECTED_CARD_COLOR,
-  PLAYER_HAND_DISPLAY_ORIGIN,
-  OPPONENT_HAND_DISPLAY_ORIGIN,
-  PLAYER_CARD_SIZE,
-  OPPONENT_CARD_SIZE,
-  PLAYER_CARD_COLOR,
-  OPPONENT_CARD_COLOR,
+  SELECTED_CARD_COLOR,
+  P1_HAND_DISPLAY_ORIGIN,
+  P2_HAND_DISPLAY_ORIGIN,
+  P1_CARD_SIZE,
+  P2_CARD_SIZE,
+  FRONTCOVER_CARD_COLOR,
+  BACKCOVER_CARD_COLOR,
 } from '../constants'
 import MainScene from '../Scenes/MainScene'
 import BaseSystem from './BaseSystem'
@@ -26,7 +26,7 @@ export default class HandSystem extends BaseSystem {
   //   const creature = this.factory?.creature(
   //     card,
   //     0,
-  //     !isOpponent ? 0 : MAX_LANE_POSITION - 1,
+  //     !isOpponent ? 0 : LANE_SIZE - 1,
   //   )
   //   if (!creature) return -1
 
@@ -96,8 +96,17 @@ export default class HandSystem extends BaseSystem {
         card,
       ) as MouseInput
 
-      if (!mouse || mouse.x < 0 || mouse.y < 0) return
-      LaneSelectionSystem.refreshLaneSelection()
+      if (!mouse || mouse.x < 0 || mouse.y < 0 || card === hand.selected) return
+
+      // refresh LaneSelection every time hand.selected changes
+      // to avoid other creatures being summoned on previously selected lanes
+      const player = this.entityManager.getEntityPosessingComponentOfId(hand.id)
+      const laneSelection = this.entityManager.getComponentOfClass(
+        LaneSelection,
+        player || -1,
+      ) as LaneSelection
+
+      LaneSelectionSystem.refreshLaneSelection(laneSelection)
       hand.selected = card
     })
   }
@@ -111,12 +120,6 @@ export default class HandSystem extends BaseSystem {
       const isPlayer = entity === this.entityManager.getEntityByTag('player')
       const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
       const deck = this.entityManager.getComponentOfClass(Deck, entity) as Deck
-
-      if (isPlayer)
-        MainScene.instance().debugEntities(
-          this.entityManager.getEntityByTag('player') || -1,
-          ...hand.cards,
-        )
 
       // checa o mouse e marca as cartas selecionadas
       if (hand && isPlayer) this.selectCardIfWasClicked(hand)
@@ -144,10 +147,10 @@ export default class HandSystem extends BaseSystem {
         ) as Renderer<Phaser.GameObjects.Shape>
 
         const displayOrigin = isPlayer
-          ? PLAYER_HAND_DISPLAY_ORIGIN
-          : OPPONENT_HAND_DISPLAY_ORIGIN
-        const cardSize = isPlayer ? PLAYER_CARD_SIZE : OPPONENT_CARD_SIZE
-        const color = isPlayer ? PLAYER_CARD_COLOR : OPPONENT_CARD_COLOR
+          ? P1_HAND_DISPLAY_ORIGIN
+          : P2_HAND_DISPLAY_ORIGIN
+        const cardSize = isPlayer ? P1_CARD_SIZE : P2_CARD_SIZE
+        const color = isPlayer ? FRONTCOVER_CARD_COLOR : BACKCOVER_CARD_COLOR
 
         const [handOriginX, handOriginY] = displayOrigin
         const [width] = cardSize
@@ -158,7 +161,7 @@ export default class HandSystem extends BaseSystem {
         )
 
         if (playerHand.selected === card)
-          renderer.sprite.setFillStyle(HAND_SELECTED_CARD_COLOR)
+          renderer.sprite.setFillStyle(SELECTED_CARD_COLOR)
         else renderer.sprite.setFillStyle(color)
       })
     })

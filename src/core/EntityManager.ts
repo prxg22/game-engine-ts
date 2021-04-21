@@ -94,6 +94,15 @@ class EntityManager {
     }, [])
   }
 
+  getEntityPosessingComponentOfId(id: number): Entity | undefined {
+    const entities = Array.from(this._entitiesMap.keys())
+
+    return entities.find((e: Entity) => {
+      const entityComponents = this.getComponents(e)
+      return entityComponents.find(component => component.id === id)
+    }, [])
+  }
+
   getAllEntities(): Entity[] {
     return Array.from(this._entitiesMap.keys())
   }

@@ -4,7 +4,7 @@ import CreatureAttributes, {
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
-import { MAX_LANE_POSITION, CLOCK } from '../constants'
+import { LANE_SIZE, CLOCK } from '../constants'
 import BaseSystem from './BaseSystem'
 
 export default class AtackSystem extends BaseSystem {
@@ -67,7 +67,7 @@ export default class AtackSystem extends BaseSystem {
           isOpponent,
         ) ||
         attackPosition <= 0 ||
-        attackPosition >= MAX_LANE_POSITION
+        attackPosition >= LANE_SIZE
       ) {
         creatureAttributes.status = CREATURE_STATUS.ATACKING
       }

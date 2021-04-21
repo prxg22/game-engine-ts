@@ -7,7 +7,7 @@ import LaneSelection, {
 } from '../Components/LaneSelection'
 import Mana from '../Components/Mana'
 import MouseInput from '../Components/MouseInput'
-import { LANES, LANE_BASE_SIZE, MAX_LANE_POSITION } from '../constants'
+import { LANES, LANE_DISPLAY_SIZE, LANE_SIZE } from '../constants'
 import BaseSystem from './BaseSystem'
 
 let instance: LaneSelectionSystem
@@ -42,7 +42,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     ) as CardDescriptor
 
     if (!mana || !descriptor) return false
-    return mana.current >= descriptor.mana
+    return mana.current >= descriptor.manaCost
   }
 
   getSelectedCardFromHand(player: Entity): Entity | undefined {
@@ -53,7 +53,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     return hand.selected
   }
 
-  static refreshLaneSelection(laneSelection: LaneSelection) {
+  static refreshLaneSelection(laneSelection?: LaneSelection) {
     if (!laneSelection) return
     laneSelection.status = LANE_SELECTION_STATUS.DEFAULT
     laneSelection.lane = -1
@@ -66,11 +66,11 @@ export default class LaneSelectionSystem extends BaseSystem {
         MouseInput,
         `lane-${lane}`,
       ) as MouseInput
-      const [baseWidth] = LANE_BASE_SIZE
+      const [baseWidth] = LANE_DISPLAY_SIZE
       if (mouse.x < 0 && mouse.y < 0) continue
       return {
         lane,
-        position: Math.round((mouse.x * MAX_LANE_POSITION) / baseWidth),
+        position: Math.round((mouse.x * LANE_SIZE) / baseWidth),
       }
     }
   }
@@ -85,7 +85,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     ) as LaneSelection
 
     // refresh lane selection
-    LaneSelectionSystem.refreshLaneSelection(laneSelection)
+    // LaneSelectionSystem.refreshLaneSelection(laneSelection)
     // checa se houve clique em alguma lane e retorna referencia da lane
     const laneReference = this.getLaneReferenceIfItWasClicked()
     if (!laneReference) return

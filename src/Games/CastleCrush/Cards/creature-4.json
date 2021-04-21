@@ -1,6 +1,6 @@
 {
   "name": "creature-4",
-  "mana": 4,
+  "manaCost": 1,
   "type": "CREATURE",
   "atk": 4,
   "speed": 4,

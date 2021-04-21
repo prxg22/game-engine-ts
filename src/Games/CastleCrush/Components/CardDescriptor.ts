@@ -7,7 +7,7 @@ export enum CARD_TYPE {
 export default class CardDescriptor extends Component {
   constructor(
     public name: string,
-    public mana: number,
+    public manaCost: number,
     public type: CARD_TYPE,
   ) {
     super()

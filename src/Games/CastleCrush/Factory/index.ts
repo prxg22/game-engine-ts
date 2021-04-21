@@ -13,29 +13,24 @@ import LanePosition from '../Components/LanePosition'
 import Renderer from '../Components/Renderer'
 import getHandCardsPositions from '../Utils/getHandCardsPositions'
 import {
-  PLAYER_CARD_SIZE,
-  OPPONENT_CARD_SIZE,
-  PLAYER_HAND_DISPLAY_ORIGIN,
-  OPPONENT_HAND_DISPLAY_ORIGIN,
-  PLAYER_CARD_COLOR,
-  OPPONENT_CARD_COLOR,
-  PLAYER_HAND_POSITION_NAME_0,
-  PLAYER_HAND_POSITION_NAME_1,
-  PLAYER_HAND_POSITION_NAME_2,
-  PLAYER_HAND_POSITION_NAME_3,
-  PLAYER_HAND_POSITION_NAME_4,
-  LANE_POSITION_NAME_0,
-  LANE_POSITION_NAME_1,
-  LANE_POSITION_NAME_2,
-  LANE_BASE_POSITION_DISPLAY_ORIGIN,
-  LANE_BASE_SIZE,
-  LANE_BASE_MARGIN_SIZE,
-  LANE_PROPORTION_FACTOR,
+  P1_CARD_SIZE,
+  P2_CARD_SIZE,
+  P1_HAND_DISPLAY_ORIGIN,
+  P2_HAND_DISPLAY_ORIGIN,
+  FRONTCOVER_CARD_COLOR,
+  BACKCOVER_CARD_COLOR,
+  LANE_DISPLAY_ORIGIN,
+  LANE_DISPLAY_SIZE,
+  LANE_MARGIN_SIZE,
   LANE_COLOR,
   LANES,
+  CREATURE_SIZE,
+  CREATURE_COLOR_MOVING,
 } from '../constants'
 import MouseInput from '../Components/MouseInput'
 import MouseInputSystem from '../Systems/MouseInputSystem'
+import LaneMovementSystem from '../Systems/LaneMovementSystem'
+import MainScene from '../Scenes/MainScene'
 
 let instance: Factory
 export default class Factory {
@@ -70,7 +65,7 @@ export default class Factory {
     ]
 
     // hand responsive area
-    const [width, height] = PLAYER_CARD_SIZE
+    const [width, height] = P1_CARD_SIZE
     const handCardAreas = getHandCardsPositions().map(([x, y]) => ({
       x,
       y,
@@ -79,34 +74,8 @@ export default class Factory {
     }))
 
     // lane responsive area
-    const [laneX, laneY] = LANE_BASE_POSITION_DISPLAY_ORIGIN
-    const [laneWidth, laneHeight] = LANE_BASE_SIZE
-
-    const clickAreaMap = {
-      [PLAYER_HAND_POSITION_NAME_0]: handCardAreas[0],
-      [PLAYER_HAND_POSITION_NAME_1]: handCardAreas[1],
-      [PLAYER_HAND_POSITION_NAME_2]: handCardAreas[2],
-      [PLAYER_HAND_POSITION_NAME_3]: handCardAreas[3],
-      [PLAYER_HAND_POSITION_NAME_4]: handCardAreas[4],
-      [LANE_POSITION_NAME_0]: {
-        x: laneX,
-        y: laneY,
-        width: laneWidth,
-        height: laneHeight,
-      },
-      [LANE_POSITION_NAME_1]: {
-        x: laneX,
-        y: laneY - laneHeight - LANE_BASE_MARGIN_SIZE,
-        width: laneWidth,
-        height: laneHeight,
-      },
-      [LANE_POSITION_NAME_2]: {
-        x: laneX,
-        y: laneY - 2 * (laneHeight + LANE_BASE_MARGIN_SIZE),
-        width: laneWidth,
-        height: laneHeight,
-      },
-    }
+    const [laneX, laneY] = LANE_DISPLAY_ORIGIN
+    const [laneWidth, laneHeight] = LANE_DISPLAY_SIZE
 
     this.entityManager.addComponent(new Mana(12, 0), player)
     this.entityManager.addComponent(new Health(1000), player)
@@ -143,11 +112,11 @@ export default class Factory {
 
     for (let laneNumber = 0; laneNumber < LANES; laneNumber++) {
       const lane = this.entityManager.createEntity(`lane-${laneNumber}`)
-      const [baseX, baseY] = LANE_BASE_POSITION_DISPLAY_ORIGIN
-      const [baseWidth, baseHeight] = LANE_BASE_SIZE
+      const [baseX, baseY] = LANE_DISPLAY_ORIGIN
+      const [baseWidth, baseHeight] = LANE_DISPLAY_SIZE
       const sprite = this.factory.rectangle(
         baseX,
-        baseY - (LANE_BASE_MARGIN_SIZE + baseHeight) * 2 * laneNumber,
+        baseY - (LANE_MARGIN_SIZE + baseHeight) * 2 * laneNumber,
         baseWidth,
         baseHeight,
         LANE_COLOR,
@@ -173,10 +142,10 @@ export default class Factory {
 
     // renderer
     const displayOrigin = isPlayer
-      ? PLAYER_HAND_DISPLAY_ORIGIN
-      : OPPONENT_HAND_DISPLAY_ORIGIN
-    const color = isPlayer ? PLAYER_CARD_COLOR : OPPONENT_CARD_COLOR
-    const size = isPlayer ? PLAYER_CARD_SIZE : OPPONENT_CARD_SIZE
+      ? P1_HAND_DISPLAY_ORIGIN
+      : P2_HAND_DISPLAY_ORIGIN
+    const color = isPlayer ? FRONTCOVER_CARD_COLOR : BACKCOVER_CARD_COLOR
+    const size = isPlayer ? P1_CARD_SIZE : P2_CARD_SIZE
     const [originX, originY] = displayOrigin
     const [width, height] = size
     const renderer = new Renderer(this.factory.rectangle())
@@ -186,8 +155,13 @@ export default class Factory {
     this.entityManager.addComponent(renderer, card)
 
     // card descriptor
-    const { type, mana }: { type: CARD_TYPE; mana: number } = CARDS[name]
-    this.entityManager.addComponent(new CardDescriptor(name, mana, type), card)
+    const { type, manaCost }: { type: CARD_TYPE; manaCost: number } = CARDS[
+      name
+    ]
+    this.entityManager.addComponent(
+      new CardDescriptor(name, manaCost, type),
+      card,
+    )
 
     // mouse
     if (isPlayer) {
@@ -205,6 +179,8 @@ export default class Factory {
       card,
     ) as CardDescriptor
 
+    const mainScene = MainScene.instance()
+
     const {
       atk,
       speed,
@@ -219,7 +195,29 @@ export default class Factory {
       new CreatureAttributes(descriptor.name, speed, atk, range),
       creature,
     )
-    this.entityManager.addComponent(new LanePosition(lane, position), creature)
+    const lanePosition = new LanePosition(lane, position)
+    this.entityManager.addComponent(lanePosition, creature)
+
+    const [displayX, displayY] =
+      LaneMovementSystem.calculateDisplayPosition(lanePosition) || []
+
+    const sprite = this.factory.rectangle(
+      displayX,
+      displayY,
+      CREATURE_SIZE,
+      CREATURE_SIZE,
+      CREATURE_COLOR_MOVING,
+    )
+
+    // mainScene.debug(
+    //   `
+    //   factry.cards:
+    //   entity: ${card} - name: ${descriptor.name} -
+    //   position: ${position}
+    //   displayX: ${displayX} - displayY: ${displayY}
+    //   `,
+    // )
+    this.entityManager.addComponent(new Renderer(sprite), creature)
 
     return creature
   }

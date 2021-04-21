@@ -26,6 +26,7 @@ export default class Hand extends Component {
     entitiesToBeRemoved.forEach(card => {
       const index = this.cards.findIndex(c => c === card)
 
+      if (this.selected === card) this.selected = -1
       removedCards.push(card)
 
       this.cards = [
