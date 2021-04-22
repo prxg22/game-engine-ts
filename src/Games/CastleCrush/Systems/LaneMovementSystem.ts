@@ -137,8 +137,10 @@ export default class LaneMovementSystem extends BaseSystem {
         )
           return
 
+        const operation = isPlayer ? 'min' : 'max'
+
         sprite.setPosition(
-          Math.max(0, Math.min(sprite.x + dx, displayX)),
+          Math.max(0, Math[operation](sprite.x + dx, displayX)),
           displayY,
         )
       })

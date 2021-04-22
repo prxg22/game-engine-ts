@@ -53,11 +53,6 @@ export default class MainScene extends BaseScene {
       .forEach(() => {
         this.factory?.mockCreature(opponent)
       })
-    Array(Phaser.Math.Between(2, 6))
-      .fill(0)
-      .forEach(() => {
-        this.factory?.mockCreature(player)
-      })
 
     // boot systems
     this.systems = [
