@@ -23,7 +23,7 @@ export default class SetCardSystem extends BaseSystem {
       player,
     ) as LaneSelection
 
-    // MainScene.instance().debugEntities(player, ...hand.cards)
+    // MainScene.instance.debugEntities(player, ...hand.cards)
 
     if (!hand || !hand.selected || !laneSelection || laneSelection.lane < 0)
       return

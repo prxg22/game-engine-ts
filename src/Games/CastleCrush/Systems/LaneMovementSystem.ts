@@ -145,7 +145,7 @@ export default class LaneMovementSystem extends BaseSystem {
         )
       })
 
-      MainScene.instance().debug(msg)
+      // MainScene.instance.debug(msg)
     })
   }
 
