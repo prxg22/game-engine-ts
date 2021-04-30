@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-export const TICK = 100000
+export const TICK = 100
 
 // dimensions
 export const GRID_SIZE = 8

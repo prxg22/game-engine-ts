@@ -8,8 +8,9 @@ import {
   GRID_SIZE,
   MAX_X,
   MAX_Y,
-  TICK
+  TICK,
 } from '../constants'
+import MainScene from '../Scenes/MainScene'
 import TickSystem from './TickSystem'
 
 export default class PhysicsSystem extends System {
@@ -23,28 +24,28 @@ export default class PhysicsSystem extends System {
     const snake = this.entityManager.getEntityByTag('snake')
     const alive = this.entityManager.getComponentOfClass(
       Alive,
-      snake || -1
+      snake || -1,
     ) as Alive
 
     if (!snake || !alive || !alive.isAlive) return
 
     const spatial = this.entityManager.getComponentOfClass(
       Spatial,
-      snake
+      snake,
     ) as Spatial
 
     if (!spatial.dx && !spatial.dy) return
 
     const bodyParts = this.entityManager.getComponentOfClass(
       EntityCollection,
-      snake
+      snake,
     ) as EntityCollection
 
     const position = { x: spatial.x, y: spatial.y }
-    bodyParts.entities.forEach((bodyPart) => {
+    bodyParts.entities.forEach(bodyPart => {
       const bodyPartSpatial = this.entityManager.getComponentOfClass(
         Spatial,
-        bodyPart
+        bodyPart,
       ) as Spatial
 
       if (!bodyPartSpatial) return

@@ -21,7 +21,7 @@ import {
   MAX_Y,
   SNAKE_FRAME_BODY,
   SNAKE_FRAME_RIGHT,
-  APPLE_FRAME
+  APPLE_FRAME,
 } from '../constants'
 import Collidable from '../Components/Collidable'
 import Alive from '../Components/Alive'
@@ -31,7 +31,7 @@ export default class Factory {
   constructor(
     public entityManager?: EntityManager,
     public factory?: Phaser.GameObjects.GameObjectFactory,
-    public input?: Phaser.Input.InputPlugin
+    public input?: Phaser.Input.InputPlugin,
   ) {
     if (instance) return instance
 
@@ -44,25 +44,29 @@ export default class Factory {
 
     const position = {
       x: Phaser.Math.Between(1, MAX_X - 1),
-      y: Phaser.Math.Between(1, MAX_Y - 1)
+      y: Phaser.Math.Between(1, MAX_Y - 1),
     }
 
     const snake = this.entityManager.createEntity('snake')
-    const bodyPart = this.bodyPart(position.x - 1, position.y) as Entity
+    const bodyPart1 = this.bodyPart(position.x - 1, position.y) as Entity
+    const bodyPart2 = this.bodyPart(position.x - 2, position.y) as Entity
 
     const keys = [
       this.input?.keyboard.addKey(KEY_UP),
       this.input?.keyboard.addKey(KEY_DOWN),
       this.input?.keyboard.addKey(KEY_LEFT),
-      this.input?.keyboard.addKey(KEY_RIGHT)
+      this.input?.keyboard.addKey(KEY_RIGHT),
     ]
 
     this.entityManager?.addComponent(new Input(keys), snake)
-    this.entityManager?.addComponent(new EntityCollection([bodyPart]), snake)
+    this.entityManager?.addComponent(
+      new EntityCollection([bodyPart1, bodyPart2]),
+      snake,
+    )
     this.entityManager?.addComponent(new Collidable(), snake)
     this.entityManager?.addComponent(
       new Spatial(position.x, position.y, 0, 0),
-      snake
+      snake,
     )
 
     this.entityManager?.addComponent(
@@ -71,10 +75,10 @@ export default class Factory {
           position.x * GRID_SIZE,
           position.y * GRID_SIZE,
           'snake',
-          SNAKE_FRAME_RIGHT
-        )
+          SNAKE_FRAME_RIGHT,
+        ),
       ),
-      snake
+      snake,
     )
 
     this.entityManager.addComponent(new Alive(), snake)
@@ -87,21 +91,21 @@ export default class Factory {
 
     const position = {
       x: Phaser.Math.Between(1, MAX_X - 1),
-      y: Phaser.Math.Between(1, MAX_Y - 1)
+      y: Phaser.Math.Between(1, MAX_Y - 1),
     }
     const apple = this.entityManager?.createEntity('apple')
     this.entityManager?.addComponent(new Collidable(), apple)
 
     this.entityManager?.addComponent(
       new Spatial(position.x, position.y, 0, 0),
-      apple
+      apple,
     )
 
     this.entityManager.addComponent(
       new Renderable(
-        this.factory.sprite(position.x, position.y, 'snake', APPLE_FRAME)
+        this.factory.sprite(position.x, position.y, 'snake', APPLE_FRAME),
       ),
-      apple
+      apple,
     )
 
     return apple
@@ -117,7 +121,7 @@ export default class Factory {
     this.entityManager?.addComponent(new Spatial(x, y, 0, 0), bodyPart)
     this.entityManager?.addComponent(
       new Renderable(this.factory.sprite(x, y, 'snake', SNAKE_FRAME_BODY)),
-      bodyPart
+      bodyPart,
     )
 
     return bodyPart
@@ -128,7 +132,7 @@ export default class Factory {
       CANVAS_WIDTH / 2,
       CANVAS_HEIGHT / 2,
       CANVAS_WIDTH - GRID_SIZE,
-      CANVAS_HEIGHT - GRID_SIZE
+      CANVAS_HEIGHT - GRID_SIZE,
     )
     frame?.setStrokeStyle(GRID_SIZE, FRAME_COLOR, 1)
 
