@@ -7,9 +7,8 @@ export default class Mana extends Component {
 
   constructor(max: number, current: number = 0) {
     super()
-    this._current = current >= MIN_MANA ? current : 0
-    const newLocal = max >= MIN_MANA
-    this._max = newLocal ? current : 0
+    this._max = Math.max(max, MIN_MANA)
+    this._current = Math.max(current, MIN_MANA)
   }
 
   get current(): number {

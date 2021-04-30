@@ -36,6 +36,7 @@ import MouseInput from '../Components/MouseInput'
 import MouseInputSystem from '../Systems/MouseInputSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
 import MainScene from '../Scenes/MainScene'
+import Attack, { AttackDescriptor } from '../Components/Attack'
 
 let instance: Factory
 export default class Factory {
@@ -63,9 +64,9 @@ export default class Factory {
     // deck cards
     const cards = [
       'creature-1',
-      'creature-2',
-      'creature-3',
-      'creature-4',
+      'creature-1',
+      'creature-1',
+      'creature-1',
       'creature-1',
     ]
 
@@ -82,7 +83,7 @@ export default class Factory {
     const [laneX, laneY] = LANE_DISPLAY_ORIGIN
     const [laneWidth, laneHeight] = LANE_DISPLAY_SIZE
 
-    this.entityManager.addComponent(new Mana(12, 0), player)
+    this.entityManager.addComponent(new Mana(1, 0), player)
     this.entityManager.addComponent(new Health(1000), player)
     this.entityManager.addComponent(new Deck(cards), player)
     this.entityManager.addComponent(new Hand(), player)
@@ -97,13 +98,13 @@ export default class Factory {
 
     const cards = [
       'creature-1',
-      'creature-2',
-      'creature-3',
-      'creature-4',
+      'creature-1',
+      'creature-1',
+      'creature-1',
       'creature-1',
     ]
 
-    this.entityManager.addComponent(new Mana(12, 0), opponent)
+    this.entityManager.addComponent(new Mana(1, 0), opponent)
     this.entityManager.addComponent(new Health(1000), opponent)
     this.entityManager.addComponent(new Deck(cards), opponent)
     this.entityManager.addComponent(new Hand(), opponent)
@@ -121,7 +122,7 @@ export default class Factory {
     ) as CreatureCollection
 
     // create random cards
-    const card = this.card(`creature-${Phaser.Math.Between(1, 4)}`, entity, 0)
+    const card = this.card(`creature-1`, entity, 0)
 
     // create a creature
     const creature = this.creature(
@@ -228,17 +229,21 @@ export default class Factory {
     ) as CardDescriptor
 
     const {
-      atk,
+      attack,
       speed,
       hp,
-      range,
-    }: { atk: number; speed: number; hp: number; range: number } = CARDS[
+    }: { attack: AttackDescriptor; speed: number; hp: number } = CARDS[
       descriptor.name
     ]
 
     this.entityManager.addComponent(new Health(hp), creature)
     this.entityManager.addComponent(
-      new CreatureAttributes(descriptor.name, speed, atk, range),
+      new Attack(attack.power, attack.range, attack.spread, attack.area),
+      creature,
+    )
+
+    this.entityManager.addComponent(
+      new CreatureAttributes(descriptor.name, speed),
       creature,
     )
     const lanePosition = new LanePosition(lane, position)
