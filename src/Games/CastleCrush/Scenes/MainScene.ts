@@ -20,27 +20,11 @@ import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
 import BaseScene from './BaseScene'
 
-const TICK = 1000
-let instance: MainScene
 export default class MainScene extends BaseScene {
   factory?: Factory
   text?: GameObjects.Text
 
-  constructor(config: string | Phaser.Types.Scenes.SettingsConfig) {
-    super(config)
-    instance = this
-  }
-  static instance(): MainScene {
-    return instance
-  }
-
   create() {
-    // debug text object
-    this.text = this.add.text(CANVAS_WIDTH + 16, 0, ``, {
-      color: '#fff',
-      fontSize: '10px',
-    })
-
     // create entities
     this.factory = new Factory(this.entityManager, this.add, this.input)
     const player = this.factory.player()
@@ -67,6 +51,8 @@ export default class MainScene extends BaseScene {
     ]
 
     super.create()
+    // debug text object
+    this.setTextPosition(CANVAS_WIDTH + 16, 16)
   }
 
   update(time: number, dt: number) {
@@ -85,60 +71,5 @@ export default class MainScene extends BaseScene {
 
     // this.debugEntities(player, ...lanes)
     super.update(time, dt)
-  }
-
-  debugEntities(...entities: (Entity | string)[]): string {
-    const msg = (entities.length
-      ? entities
-      : this.entityManager.getAllEntities()
-    )
-      .map(entityOrTag => {
-        const isTag = typeof entityOrTag === 'string'
-        const entity = (isTag
-          ? this.entityManager.getEntityByTag(entityOrTag as string)
-          : entityOrTag) as Entity
-        const tag = (isTag
-          ? entityOrTag
-          : this.entityManager.getTagByEntity(entityOrTag as Entity)) as string
-        let msg = `--${tag || entity}--\n`
-        msg += this.debugEntity(entity)
-        return msg
-      })
-      .join('\n\n---------\n\n')
-    this.text?.setText(msg)
-    return msg
-  }
-
-  debugEntity(entity: Entity): string {
-    const msg = this.entityManager
-      .getComponents(entity)
-      .map(this.debugComponent)
-      .join('\n')
-
-    this.text?.setText(msg)
-    return msg
-  }
-
-  debugComponent(component?: Component): string {
-    if (!component) return ''
-    let msg = `${component.toString()}: `
-    if (component instanceof Renderer) {
-      msg += `\nsprite.x: ${component.sprite.x} sprite.y: ${component.sprite.y}\n`
-      return msg
-    }
-
-    msg += Object.entries(component)
-      .map(([key, value]): string => {
-        return ` ${key}: ${value}`
-      })
-      .join('\n')
-
-    this?.text?.setText(msg)
-    return msg
-  }
-
-  debug(...msg: string[]): string[] {
-    this?.text?.setText(msg)
-    return msg
   }
 }
