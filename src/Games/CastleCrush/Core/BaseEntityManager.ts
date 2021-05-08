@@ -97,9 +97,9 @@ export default class BaseEntityManager extends EntityManager {
       lane,
     )
 
-    let creaturesOnRange: Entity[][] = [[]]
+    let creaturesOnRange: Entity[][] = []
     let lastPosition = 0
-    let positionIndex = 0
+    let positionIndex = -1
     for (let i = 0; i < creatures.length; i++) {
       const creature = creatures[i]
       const position =
@@ -107,14 +107,15 @@ export default class BaseEntityManager extends EntityManager {
         (this.getComponentOfClass(LanePosition, creature) as LanePosition)
           .position
 
-      if (position < lower || position > upper) break
-      creaturesOnRange[positionIndex].push(creature)
+      if (position < lower || position > upper) continue
 
-      if (!position || position !== lastPosition) {
+      if (position !== lastPosition) {
         lastPosition = position
         positionIndex += 1
         creaturesOnRange[positionIndex] = []
       }
+
+      creaturesOnRange[positionIndex].push(creature)
     }
 
     return creaturesOnRange

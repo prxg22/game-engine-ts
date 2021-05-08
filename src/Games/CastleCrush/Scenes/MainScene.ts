@@ -8,6 +8,7 @@ import MouseInputSystem from '../Systems/MouseInputSystem'
 import ManaSystem from '../Systems/ManaSystem'
 import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
 import AttackSystem from '../Systems/AttackSystem'
+import HealthSystem from '../Systems/HealthSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
 import BaseScene from '../Core/BaseScene'
 
@@ -37,8 +38,9 @@ export default class MainScene extends BaseScene {
       new HandSystem(this.entityManager, this.add, this.input),
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
-      new LaneMovementSystem(this.entityManager, this.add, this.input),
       new AttackSystem(this.entityManager, this.add, this.input),
+      new LaneMovementSystem(this.entityManager, this.add, this.input),
+      new HealthSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()

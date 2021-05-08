@@ -22,7 +22,7 @@ import {
   P1_TAG,
   P2_TAG,
 } from '../constants'
-import MainScene from '../Scenes/MainScene'
+
 import BaseSystem from '../Core/BaseSystem'
 
 export default class LaneMovementSystem extends BaseSystem {
@@ -130,8 +130,6 @@ export default class LaneMovementSystem extends BaseSystem {
 
         const x = Math.max(0, Math[operation](sprite.x + dx, displayX))
 
-        // MainScene.instance.debug(`${health.current} / ${health.max}`)
-
         const msg = `${creature}\nhp:${health.current}\nx:${
           isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
         }`
@@ -144,8 +142,6 @@ export default class LaneMovementSystem extends BaseSystem {
 
         sprite.setPosition(x, displayY)
       })
-
-      // MainScene.instance.debug(msg)
     })
   }
 
@@ -159,7 +155,7 @@ export default class LaneMovementSystem extends BaseSystem {
     const position = isPlayer1
       ? lanePosition.position
       : LANE_SIZE - lanePosition.position
-    const displayX = baseX + (position * baseWidth) / LANE_SIZE
+    const displayX = baseX + (position * baseWidth) / LANE_SIZE - CREATURE_SIZE
     const displayY =
       baseY +
       (baseHeight / 2 - CREATURE_SIZE / 2) -

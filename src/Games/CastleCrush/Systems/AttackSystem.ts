@@ -19,19 +19,19 @@ export default class AtackSystem extends BaseSystem {
         creature,
       ) as Health
 
-      msg += `hp[${creature}]: ${health.toString()}\n`
       health.hit(hit)
     })
   }
 
-  resolveDamage(attack: Attack, enemiesOnRange: Entity[][]) {
-    let targets = enemiesOnRange.slice(0, attack.spread + 1).flat()
+  resolveDamage(attack: Attack, opponentsOnRange: Entity[][]) {
+    let targets = opponentsOnRange.slice(0, attack.spread + 1).flat()
     if (!attack.area) targets = [targets[0]]
+    msg += `targets: ${targets}\n`
 
     this.hitCreature(attack.power, targets)
   }
 
-  resolveCreatureAttack(owner: Entity, creature: Entity): boolean {
+  resolveCreatureAttack(owner: Entity, creature: Entity) {
     const lanePosition = this.entityManager.getComponentOfClass(
       LanePosition,
       creature,
@@ -52,7 +52,10 @@ export default class AtackSystem extends BaseSystem {
       lanePosition.position + attack.range,
     )
 
-    msg += `opponentsOnRange[${creature}]: ${opponentsOnRange}\n`
+    msg += `x: ${lanePosition.position}\n`
+    msg += `opponentsOnRange[${creature}]: ${opponentsOnRange.map(
+      a => `[${a}],`,
+    )}\n`
 
     creatureAttributes.status =
       opponentsOnRange.length && opponentsOnRange[0].length
@@ -64,7 +67,6 @@ export default class AtackSystem extends BaseSystem {
     if (isAttacking) {
       this.resolveDamage(attack, opponentsOnRange)
     }
-    return isAttacking
   }
 
   clock() {
@@ -75,16 +77,16 @@ export default class AtackSystem extends BaseSystem {
     const creaturesAttacking = [player1, player2].map(player => {
       msg += `\n\n ${this.entityManager.getTagByEntity(player)} \n\n`
       for (let lane = 0; lane < LANES; lane++) {
-        msg += `-- lane${lane} --\n`
+        msg += `-- lane${lane} --\n\n`
         const creatures = this.entityManager.getPlayerCreaturesOnLaneSortedByRange(
           player,
           lane,
         )
 
-        for (let i = 0; i < creatures.length; i++) {
-          const creature = creatures[i]
-          if (!this.resolveCreatureAttack(player, creature)) break
-        }
+        creatures.forEach(creature => {
+          msg += `-- creature[${creature}] --\n`
+          this.resolveCreatureAttack(player, creature)
+        })
       }
     })
 
