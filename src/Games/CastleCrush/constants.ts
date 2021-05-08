@@ -5,6 +5,9 @@ export const CLOCK = 800
 export const CANVAS_WIDTH = 800
 export const CANVAS_HEIGHT = 600
 
+// health
+export const HEALTH_DISPLAY_OFFSET = 100
+
 // mana and cards
 export const MIN_MANA = 0
 export const MAX_MANA = 12

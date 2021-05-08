@@ -130,7 +130,7 @@ export default class LaneMovementSystem extends BaseSystem {
 
         const x = Math.max(0, Math[operation](sprite.x + dx, displayX))
 
-        const msg = `${creature}\nhp:${health.current}\nx:${
+        const msg = `${creature}\nx:${
           isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
         }`
 

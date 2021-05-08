@@ -52,6 +52,8 @@ export default class AtackSystem extends BaseSystem {
       lanePosition.position + attack.range,
     )
 
+    if (lanePosition.position + attack.range >= LANE_SIZE)
+      opponentsOnRange.push([this.entityManager.getOpponent(owner)])
     msg += `x: ${lanePosition.position}\n`
     msg += `opponentsOnRange[${creature}]: ${opponentsOnRange.map(
       a => `[${a}],`,
