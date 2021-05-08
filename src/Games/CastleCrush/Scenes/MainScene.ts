@@ -6,7 +6,7 @@ import {
   CANVAS_WIDTH,
   FRAME_COLOR,
   P2_HAND_DISPLAY_ORIGIN,
-  P1_HAND_DISPLAY_ORIGIN,
+  P1_HAND_DISPLAY_ORIGIN
 } from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
@@ -27,15 +27,15 @@ export default class MainScene extends BaseScene {
   create() {
     // create entities
     this.factory = new Factory(this.entityManager, this.add, this.input)
-    const player = this.factory.player()
-    const opponent = this.factory.opponent()
+    const player1 = this.factory.player1()
+    const player2 = this.factory.player2()
     this.factory.lanes()
 
     // mock oponents creatures
     Array(Phaser.Math.Between(2, 6))
       .fill(0)
       .forEach(() => {
-        this.factory?.mockCreature(opponent)
+        this.factory?.mockCreature(player2)
       })
 
     // boot systems
@@ -46,30 +46,12 @@ export default class MainScene extends BaseScene {
       new HandSystem(this.entityManager, this.add, this.input),
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
-      new LaneMovementSystem(this.entityManager, this.add, this.input),
-      new AttackSystem(this.entityManager, this.add, this.input),
+      new LaneMovementSystem(this.entityManager, this.add, this.input)
+      // new AttackSystem(this.entityManager, this.add, this.input)
     ]
 
     super.create()
     // debug text object
     this.setTextPosition(CANVAS_WIDTH + 16, 16)
-  }
-
-  update(time: number, dt: number) {
-    const opponent = this.entityManager?.getEntityByTag('opponent')
-    const player = this.entityManager?.getEntityByTag('player')
-    const lanes = [
-      this.entityManager?.getEntityByTag('lane-0') || -1,
-      this.entityManager?.getEntityByTag('lane-1') || -1,
-      this.entityManager?.getEntityByTag('lane-2') || -1,
-    ]
-    if (!opponent || !player) return
-    const playerHand = this.entityManager.getComponentOfClass(
-      Hand,
-      player,
-    ) as Hand
-
-    // this.debugEntities(player, ...lanes)
-    super.update(time, dt)
   }
 }

@@ -3,28 +3,26 @@ import CardDescriptor from '../Components/CardDescriptor'
 import Hand from '../Components/Hand'
 import { LaneReference } from '../Components/LanePosition'
 import LaneSelection, {
-  LANE_SELECTION_STATUS,
+  LANE_SELECTION_STATUS
 } from '../Components/LaneSelection'
 import Mana from '../Components/Mana'
 import MouseInput from '../Components/MouseInput'
 import { LANES, LANE_DISPLAY_SIZE, LANE_SIZE } from '../constants'
 import BaseSystem from './BaseSystem'
 
-let instance: LaneSelectionSystem
 export default class LaneSelectionSystem extends BaseSystem {
   constructor(
     entityManager: EntityManager,
     gameObjectFactory: Phaser.GameObjects.GameObjectFactory,
-    inputPlugin: Phaser.Input.InputPlugin,
+    inputPlugin: Phaser.Input.InputPlugin
   ) {
     super(entityManager, gameObjectFactory, inputPlugin)
-    instance = this
   }
 
   selectLane(player: Entity, laneReference: LaneReference) {
     const laneSelection = this.entityManager.getComponentOfClass(
       LaneSelection,
-      player,
+      player
     ) as LaneSelection
     if (!laneSelection) return
 
@@ -35,10 +33,9 @@ export default class LaneSelectionSystem extends BaseSystem {
 
   checkIfPlayerHasEnoughMana(player: Entity, selectedCard: Entity): boolean {
     const mana = this.entityManager.getComponentOfClass(Mana, player) as Mana
-    const hand = this.entityManager.getComponentOfClass(Hand, player) as Hand
     const descriptor = this.entityManager.getComponentOfClass(
       CardDescriptor,
-      selectedCard,
+      selectedCard
     ) as CardDescriptor
 
     if (!mana || !descriptor) return false
@@ -53,6 +50,21 @@ export default class LaneSelectionSystem extends BaseSystem {
     return hand.selected
   }
 
+  getLaneReferenceIfItWasClicked(): LaneReference | undefined {
+    for (let lane = 0; lane < LANES; lane++) {
+      const mouse = this.entityManager.getComponentOfClass(
+        MouseInput,
+        `lane-${lane}`
+      ) as MouseInput
+      const [baseWidth] = LANE_DISPLAY_SIZE
+      if (mouse.x < 0 && mouse.y < 0) continue
+      return {
+        lane,
+        position: Math.round((mouse.x * LANE_SIZE) / baseWidth)
+      }
+    }
+  }
+
   static refreshLaneSelection(laneSelection?: LaneSelection) {
     if (!laneSelection) return
     laneSelection.status = LANE_SELECTION_STATUS.DEFAULT
@@ -60,27 +72,12 @@ export default class LaneSelectionSystem extends BaseSystem {
     laneSelection.position = -1
   }
 
-  getLaneReferenceIfItWasClicked(): LaneReference | undefined {
-    for (let lane = 0; lane < LANES; lane++) {
-      const mouse = this.entityManager.getComponentOfClass(
-        MouseInput,
-        `lane-${lane}`,
-      ) as MouseInput
-      const [baseWidth] = LANE_DISPLAY_SIZE
-      if (mouse.x < 0 && mouse.y < 0) continue
-      return {
-        lane,
-        position: Math.round((mouse.x * LANE_SIZE) / baseWidth),
-      }
-    }
-  }
-
   update(dt: number) {
-    const player = this.entityManager.getEntityByTag('player') || -1
+    const player1 = this.entityManager.getEntityByTag('player1') || -1
 
     const laneSelection = this.entityManager.getComponentOfClass(
       LaneSelection,
-      player,
+      player1
     ) as LaneSelection
 
     // refresh lane selection
@@ -92,7 +89,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     // TODO: checa se a laneReference é válida para esta carta
 
     // verifica se naquela entidade tem uma carta selcionada na mao
-    const selectedCard = this.getSelectedCardFromHand(player)
+    const selectedCard = this.getSelectedCardFromHand(player1)
     if ((selectedCard || -1) < 0) {
       laneSelection.status = LANE_SELECTION_STATUS.NO_CARD_SELECTED_ERROR
       return
@@ -100,8 +97,8 @@ export default class LaneSelectionSystem extends BaseSystem {
 
     // verificar se a entidade tem mana suficiente
     const hasEnoughMana = this.checkIfPlayerHasEnoughMana(
-      player,
-      selectedCard || -1,
+      player1,
+      selectedCard || -1
     )
 
     if (!hasEnoughMana) {
@@ -109,6 +106,6 @@ export default class LaneSelectionSystem extends BaseSystem {
       return
     }
     // seleciona a lane no componente LanseSelection
-    this.selectLane(player, laneReference)
+    this.selectLane(player1, laneReference)
   }
 }
