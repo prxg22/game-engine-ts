@@ -4,110 +4,91 @@ import CreatureAttributes, {
   CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
+import Health from '../Components/Health'
 import LanePosition from '../Components/LanePosition'
-import { LANE_SIZE, CLOCK, P1_TAG, P2_TAG } from '../constants'
+import { LANE_SIZE, CLOCK, P1_TAG, P2_TAG, LANES } from '../constants'
 import BaseSystem from '../Core/BaseSystem'
+import MainScene from '../Scenes/MainScene'
 
+let msg = ``
 export default class AtackSystem extends BaseSystem {
-  hasOpponentCreatureOnPosition(
-    lane: number,
-    attackPosition: number,
-    isOpponent: boolean = false,
-  ): boolean {
-    const player = this.entityManager.getEntityByTag(
-      isOpponent ? P1_TAG : P2_TAG,
-    )
-    const creatures = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      player || -1,
-    ) as CreatureCollection
-
-    return creatures.entities.some(creature => {
-      const lanePosition = this.entityManager.getComponentOfClass(
-        LanePosition,
+  hitCreature(hit: number, creatures: Entity[]) {
+    creatures.forEach(creature => {
+      const health = this.entityManager.getComponentOfClass(
+        Health,
         creature,
-      ) as LanePosition
+      ) as Health
 
-      const creatureAttributes = this.entityManager.getComponentOfClass(
-        CreatureAttributes,
-        creature,
-      ) as CreatureAttributes
-
-      return (
-        lanePosition.lane === lane &&
-        (!isOpponent
-          ? attackPosition >= lanePosition.position
-          : attackPosition <= lanePosition.position)
-      )
+      msg += `hp[${creature}]: ${health.toString()}\n`
+      health.hit(hit)
     })
   }
 
-  checkIfCreaturesAreAttacking(player: Entity, isOpponent: boolean = false) {
-    const creatures = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      player,
-    ) as CreatureCollection
-    creatures.entities.forEach(creature => {
-      const creatureAttributes = this.entityManager.getComponentOfClass(
-        CreatureAttributes,
-        creature,
-      ) as CreatureAttributes
-      const attack = this.entityManager.getComponentOfClass(
-        Attack,
-        creature,
-      ) as Attack
-      const lanePosition = this.entityManager.getComponentOfClass(
-        LanePosition,
-        creature,
-      ) as LanePosition
+  resolveDamage(attack: Attack, enemiesOnRange: Entity[][]) {
+    let targets = enemiesOnRange.slice(0, attack.spread + 1).flat()
+    if (!attack.area) targets = [targets[0]]
 
-      const modifier = isOpponent ? -1 : 1
-      const attackPosition = lanePosition.position + attack.range * modifier
-
-      if (
-        this.hasOpponentCreatureOnPosition(
-          lanePosition.lane,
-          attackPosition,
-          isOpponent,
-        ) ||
-        attackPosition <= 0 ||
-        attackPosition >= LANE_SIZE
-      ) {
-        creatureAttributes.status = CREATURE_STATUS.ATACKING
-      }
-    })
+    this.hitCreature(attack.power, targets)
   }
 
-  isCreatureAttacking(creature: Entity, owner: Entity): boolean {
-    const isPlayer1 = this.entityManager.isPlayer1(owner)
-    const attack = this.entityManager.getComponentOfClass(
-      Attack,
-      creature,
-    ) as Attack
+  resolveCreatureAttack(owner: Entity, creature: Entity): boolean {
     const lanePosition = this.entityManager.getComponentOfClass(
       LanePosition,
       creature,
     ) as LanePosition
+    const attack = this.entityManager.getComponentOfClass(
+      Attack,
+      creature,
+    ) as Attack
+    const creatureAttributes = this.entityManager.getComponentOfClass(
+      CreatureAttributes,
+      creature,
+    ) as CreatureAttributes
 
-    const attackPosition = lanePosition.position + attack.range
-  }
-
-  resolvePlayerAttack(owner: string | Entity) {
-    const creaturesCollection = this.entityManager.getComponentOfClass(
-      CreatureCollection,
+    const opponentsOnRange = this.entityManager.getOpponentCreaturesOnRange(
       owner,
-    ) as CreatureCollection
+      lanePosition.lane,
+      lanePosition.position,
+      lanePosition.position + attack.range,
+    )
 
-    creaturesCollection.entities.forEach(creature => {
-      const isAttacking = this.isCreatureAttacking(creature, owner)
-    })
+    msg += `opponentsOnRange[${creature}]: ${opponentsOnRange}\n`
+
+    creatureAttributes.status =
+      opponentsOnRange.length && opponentsOnRange[0].length
+        ? CREATURE_STATUS.ATACKING
+        : CREATURE_STATUS.MOVING
+
+    const isAttacking = creatureAttributes.status === CREATURE_STATUS.ATACKING
+
+    if (isAttacking) {
+      this.resolveDamage(attack, opponentsOnRange)
+    }
+    return isAttacking
   }
 
   clock() {
-    const player1 = this.entityManager.player1 || -1
-    const player2 = this.entityManager.player2 || -1
-    this.checkIfCreaturesAreAttacking(player1)
-    this.checkIfCreaturesAreAttacking(player2, true)
+    const player1 = this.entityManager.player1
+    const player2 = this.entityManager.player2
+
+    msg = ``
+    const creaturesAttacking = [player1, player2].map(player => {
+      msg += `\n\n ${this.entityManager.getTagByEntity(player)} \n\n`
+      for (let lane = 0; lane < LANES; lane++) {
+        msg += `-- lane${lane} --\n`
+        const creatures = this.entityManager.getPlayerCreaturesOnLaneSortedByRange(
+          player,
+          lane,
+        )
+
+        for (let i = 0; i < creatures.length; i++) {
+          const creature = creatures[i]
+          if (!this.resolveCreatureAttack(player, creature)) break
+        }
+      }
+    })
+
+    MainScene.instance.debug(msg)
   }
 }
 

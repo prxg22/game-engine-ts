@@ -1,13 +1,5 @@
 import { GameObjects } from 'phaser'
-import { Component, Entity, Scene } from '../../../Core'
-import Renderer from '../Components/Renderer'
-import {
-  CANVAS_HEIGHT,
-  CANVAS_WIDTH,
-  FRAME_COLOR,
-  P2_HAND_DISPLAY_ORIGIN,
-  P1_HAND_DISPLAY_ORIGIN,
-} from '../constants'
+import { CANVAS_WIDTH } from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
@@ -15,6 +7,7 @@ import LaneMovementSystem from '../Systems/LaneMovementSystem'
 import MouseInputSystem from '../Systems/MouseInputSystem'
 import ManaSystem from '../Systems/ManaSystem'
 import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
+import AttackSystem from '../Systems/AttackSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
 import BaseScene from '../Core/BaseScene'
 
@@ -45,7 +38,7 @@ export default class MainScene extends BaseScene {
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
       new LaneMovementSystem(this.entityManager, this.add, this.input),
-      // new AttackSystem(this.entityManager, this.add, this.input)
+      new AttackSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()

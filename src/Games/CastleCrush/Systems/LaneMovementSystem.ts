@@ -59,6 +59,8 @@ export default class LaneMovementSystem extends BaseSystem {
     this.moveCreatures(player2)
   }
 
+  positionText: Phaser.GameObjects.Text[] = []
+
   render(dt: number) {
     const player1: Entity = this.entityManager.player1 || -1
     const player2: Entity = this.entityManager.player2 || -1
@@ -126,10 +128,21 @@ export default class LaneMovementSystem extends BaseSystem {
 
         const operation = isPlayer1 ? 'min' : 'max'
 
-        sprite.setPosition(
-          Math.max(0, Math[operation](sprite.x + dx, displayX)),
-          displayY,
-        )
+        const x = Math.max(0, Math[operation](sprite.x + dx, displayX))
+
+        // MainScene.instance.debug(`${health.current} / ${health.max}`)
+
+        const msg = `${creature}\nhp:${health.current}\nx:${
+          isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
+        }`
+
+        this.positionText[creature] = this.positionText[creature]
+          ? this.positionText[creature].setPosition(x, displayY).setText(msg)
+          : this.gameObjectFactory.text(x, displayY, msg, {
+              fontSize: '11px',
+            })
+
+        sprite.setPosition(x, displayY)
       })
 
       // MainScene.instance.debug(msg)

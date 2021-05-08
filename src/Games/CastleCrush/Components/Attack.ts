@@ -12,7 +12,7 @@ export default class Attack extends Component {
     public power: number = 1,
     public range: number = 1,
     public spread: number = 0,
-    public area: boolean = false,
+    public area: boolean = Boolean(spread),
   ) {
     super()
   }

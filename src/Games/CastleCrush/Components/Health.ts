@@ -17,10 +17,15 @@ export default class Health extends Component {
   }
 
   hit(n: number) {
-    this.current -= Math.max(n, 0)
+    this.current -= n
   }
 
   recover(n: number) {
-    this.current += Math.max(n, 0)
+    this.current += n
+  }
+
+  toString(showComponentLabel: boolean = false) {
+    const msg = showComponentLabel ? `${super.toString()}\n` : ''
+    return `${msg}${this.current}/${this.max}`
   }
 }
