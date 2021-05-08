@@ -1,7 +1,7 @@
 import { GameObjects } from 'phaser'
 import { Entity, EntityManager } from '../../../Core'
 import CreatureAttributes, {
-  CREATURE_STATUS
+  CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import Health from '../Components/Health'
@@ -18,23 +18,25 @@ import {
   P1_CREATURE_COLOR_ATTACKING,
   P2_CREATURE_COLOR_ATTACKING,
   P1_CREATURE_COLOR_MOVING,
-  P2_CREATURE_COLOR_MOVING
+  P2_CREATURE_COLOR_MOVING,
+  P1_TAG,
+  P2_TAG,
 } from '../constants'
 import MainScene from '../Scenes/MainScene'
-import BaseSystem from './BaseSystem'
+import BaseSystem from '../Core/BaseSystem'
 
 export default class LaneMovementSystem extends BaseSystem {
   moveCreatures(owner: Entity) {
-    const isPlayer1 = owner === this.entityManager.getEntityByTag('player1')
+    const isPlayer1 = this.entityManager.isPlayer1(owner)
     const playerCreatures = this.entityManager.getComponentOfClass(
       CreatureCollection,
-      owner
+      owner,
     ) as CreatureCollection
 
-    playerCreatures.entities.forEach((creature) => {
+    playerCreatures.entities.forEach(creature => {
       const creatureAttributes = this.entityManager.getComponentOfClass(
         CreatureAttributes,
-        creature
+        creature,
       ) as CreatureAttributes
 
       if (creatureAttributes.status === CREATURE_STATUS.ATACKING) return
@@ -42,7 +44,7 @@ export default class LaneMovementSystem extends BaseSystem {
 
       const lanePosition = this.entityManager.getComponentOfClass(
         LanePosition,
-        creature
+        creature,
       ) as LanePosition
 
       if (creatureAttributes.status === CREATURE_STATUS.MOVING && isPlayer1)
@@ -52,52 +54,52 @@ export default class LaneMovementSystem extends BaseSystem {
 
       lanePosition.position = Math.max(
         0,
-        Math.min(lanePosition.position, LANE_SIZE)
+        Math.min(lanePosition.position, LANE_SIZE),
       )
     })
   }
 
   clock() {
-    const player1 = this.entityManager.getEntityByTag('player1') || -1
-    const player2 = this.entityManager.getEntityByTag('player2') || -1
+    const player1 = this.entityManager.player1 || -1
+    const player2 = this.entityManager.player2 || -1
     this.moveCreatures(player1)
     this.moveCreatures(player2)
   }
 
   render(dt: number) {
-    const player1: Entity = this.entityManager.getEntityByTag('player1') || -1
-    const player2: Entity = this.entityManager.getEntityByTag('player2') || -1
+    const player1: Entity = this.entityManager.player1 || -1
+    const player2: Entity = this.entityManager.player2 || -1
 
-    ;[player1, player2].forEach((entity) => {
-      const isPlayer1 = entity === this.entityManager.getEntityByTag('player1')
+    ;[player1, player2].forEach(entity => {
+      const isPlayer1 = this.entityManager.isPlayer1(entity)
       const creatureCollection = this.entityManager.getComponentOfClass(
         CreatureCollection,
-        entity
+        entity,
       ) as CreatureCollection
 
       let msg = `
         LaneMovementySystem.render:
         creatureCollection: ${creatureCollection.entities}
         `
-      creatureCollection.entities.forEach((creature) => {
+      creatureCollection.entities.forEach(creature => {
         const lanePosition = this.entityManager.getComponentOfClass(
           LanePosition,
-          creature
+          creature,
         ) as LanePosition
 
         const creatureAttributes = this.entityManager.getComponentOfClass(
           CreatureAttributes,
-          creature
+          creature,
         ) as CreatureAttributes
 
         const { sprite } = this.entityManager.getComponentOfClass(
           Renderer,
-          creature
+          creature,
         ) as Renderer<GameObjects.Shape>
 
         const health = this.entityManager.getComponentOfClass(
           Health,
-          creature
+          creature,
         ) as Health
 
         if (!lanePosition) return
@@ -112,14 +114,14 @@ export default class LaneMovementSystem extends BaseSystem {
           sprite.setFillStyle(
             isPlayer1
               ? P1_CREATURE_COLOR_ATTACKING
-              : P2_CREATURE_COLOR_ATTACKING
+              : P2_CREATURE_COLOR_ATTACKING,
           )
 
           return
         }
 
         sprite.setFillStyle(
-          isPlayer1 ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING
+          isPlayer1 ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING,
         )
 
         const [displayX = 0, displayY] =
@@ -140,7 +142,7 @@ export default class LaneMovementSystem extends BaseSystem {
 
         sprite.setPosition(
           Math.max(0, Math[operation](sprite.x + dx, displayX)),
-          displayY
+          displayY,
         )
       })
 
@@ -149,7 +151,7 @@ export default class LaneMovementSystem extends BaseSystem {
   }
 
   static calculateDisplayPosition(
-    lanePosition: LanePosition
+    lanePosition: LanePosition,
   ): [number, number] | undefined {
     const [baseX, baseY] = LANE_DISPLAY_ORIGIN
     const [baseWidth, baseHeight] = LANE_DISPLAY_SIZE

@@ -8,7 +8,7 @@ import { LaneReference } from '../Components/LanePosition'
 import LaneSelection from '../Components/LaneSelection'
 import Mana from '../Components/Mana'
 import Renderer from '../Components/Renderer'
-import BaseSystem from './BaseSystem'
+import BaseSystem from '../Core/BaseSystem'
 
 export interface CardToBeSet {
   card: Entity

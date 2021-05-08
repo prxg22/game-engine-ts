@@ -14,17 +14,18 @@ import {
   P1_CARD_SIZE,
   P2_CARD_SIZE,
   FRONTCOVER_CARD_COLOR,
-  BACKCOVER_CARD_COLOR
+  BACKCOVER_CARD_COLOR,
+  P1_TAG,
 } from '../constants'
 import MainScene from '../Scenes/MainScene'
-import BaseSystem from './BaseSystem'
+import BaseSystem from '../Core/BaseSystem'
 import LaneSelectionSystem from './LaneSelectionSystem'
 
 export default class HandSystem extends BaseSystem {
   draw(entity: Entity, deck: Deck, hand: Hand) {
     if (!deck.drawList.length || hand.full) return
 
-    deck.drawList.forEach((cardName) => {
+    deck.drawList.forEach(cardName => {
       const card = this.factory?.card(cardName, entity, hand.cards.length)
       hand.add(card || -1)
     })
@@ -34,10 +35,10 @@ export default class HandSystem extends BaseSystem {
     // percorre a mão procurando por cartas que tenham sido clicadas
     // e as seleciona
 
-    hand.cards.forEach((card) => {
+    hand.cards.forEach(card => {
       const mouse = this.entityManager.getComponentOfClass(
         MouseInput,
-        card
+        card,
       ) as MouseInput
 
       if (!mouse || mouse.x < 0 || mouse.y < 0 || card === hand.selected) return
@@ -47,7 +48,7 @@ export default class HandSystem extends BaseSystem {
       const player = this.entityManager.getEntityPosessingComponentOfId(hand.id)
       const laneSelection = this.entityManager.getComponentOfClass(
         LaneSelection,
-        player || -1
+        player || -1,
       ) as LaneSelection
 
       LaneSelectionSystem.refreshLaneSelection(laneSelection)
@@ -57,37 +58,37 @@ export default class HandSystem extends BaseSystem {
 
   update() {
     const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
-      [Hand]
+      [Hand],
     )
 
-    handEntities.forEach((entity) => {
-      const isPlayer1 = entity === this.entityManager.getEntityByTag('player1')
-      const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
-      const deck = this.entityManager.getComponentOfClass(Deck, entity) as Deck
+    handEntities.forEach(player => {
+      const isPlayer1 = this.entityManager.isPlayer1(player)
+      const hand = this.entityManager.getComponentOfClass(Hand, player) as Hand
+      const deck = this.entityManager.getComponentOfClass(Deck, player) as Deck
 
       // checa o mouse e marca as cartas selecionadas
       if (hand && isPlayer1) this.selectCardIfWasClicked(hand)
-      if (deck) this.draw(entity, deck, hand)
+      if (deck) this.draw(player, deck, hand)
     })
   }
 
   render() {
     const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
-      [Hand]
+      [Hand],
     )
 
-    handEntities.forEach((entity) => {
-      const isPlayer1 = entity === this.entityManager.getEntityByTag('player1')
+    handEntities.forEach(entity => {
+      const isPlayer1 = this.entityManager.isPlayer1(entity)
 
       const player1Hand = this.entityManager.getComponentOfClass(
         Hand,
-        entity
+        entity,
       ) as Hand
 
       player1Hand.cards.forEach((card, index) => {
         const renderer = this.entityManager.getComponentOfClass(
           Renderer,
-          card
+          card,
         ) as Renderer<Phaser.GameObjects.Shape>
 
         const displayOrigin = isPlayer1
@@ -101,7 +102,7 @@ export default class HandSystem extends BaseSystem {
 
         renderer.sprite.setPosition(
           index * width * 2 + handOriginX,
-          handOriginY
+          handOriginY,
         )
 
         if (player1Hand.selected === card)

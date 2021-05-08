@@ -1,11 +1,12 @@
 import { Entity, System } from '../../../Core'
+import Attack from '../Components/Attack'
 import CreatureAttributes, {
   CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
 import CreatureCollection from '../Components/CreatureCollection'
 import LanePosition from '../Components/LanePosition'
-import { LANE_SIZE, CLOCK } from '../constants'
-import BaseSystem from './BaseSystem'
+import { LANE_SIZE, CLOCK, P1_TAG, P2_TAG } from '../constants'
+import BaseSystem from '../Core/BaseSystem'
 
 export default class AtackSystem extends BaseSystem {
   hasOpponentCreatureOnPosition(
@@ -14,7 +15,7 @@ export default class AtackSystem extends BaseSystem {
     isOpponent: boolean = false,
   ): boolean {
     const player = this.entityManager.getEntityByTag(
-      isOpponent ? 'player' : 'opponent',
+      isOpponent ? P1_TAG : P2_TAG,
     )
     const creatures = this.entityManager.getComponentOfClass(
       CreatureCollection,
@@ -51,14 +52,17 @@ export default class AtackSystem extends BaseSystem {
         CreatureAttributes,
         creature,
       ) as CreatureAttributes
+      const attack = this.entityManager.getComponentOfClass(
+        Attack,
+        creature,
+      ) as Attack
       const lanePosition = this.entityManager.getComponentOfClass(
         LanePosition,
         creature,
       ) as LanePosition
 
       const modifier = isOpponent ? -1 : 1
-      const attackPosition =
-        lanePosition.position + creatureAttributes.range * modifier
+      const attackPosition = lanePosition.position + attack.range * modifier
 
       if (
         this.hasOpponentCreatureOnPosition(
@@ -74,10 +78,47 @@ export default class AtackSystem extends BaseSystem {
     })
   }
 
+  isCreatureAttacking(creature: Entity, owner: Entity): boolean {
+    const isPlayer1 = this.entityManager.isPlayer1(owner)
+    const attack = this.entityManager.getComponentOfClass(
+      Attack,
+      creature,
+    ) as Attack
+    const lanePosition = this.entityManager.getComponentOfClass(
+      LanePosition,
+      creature,
+    ) as LanePosition
+
+    const attackPosition = lanePosition.position + attack.range
+  }
+
+  resolvePlayerAttack(owner: string | Entity) {
+    const creaturesCollection = this.entityManager.getComponentOfClass(
+      CreatureCollection,
+      owner,
+    ) as CreatureCollection
+
+    creaturesCollection.entities.forEach(creature => {
+      const isAttacking = this.isCreatureAttacking(creature, owner)
+    })
+  }
+
   clock() {
-    const player = this.entityManager.getEntityByTag('player') || -1
-    const opponent = this.entityManager.getEntityByTag('opponent') || -1
-    this.checkIfCreaturesAreAttacking(player)
-    this.checkIfCreaturesAreAttacking(opponent, true)
+    const player1 = this.entityManager.player1 || -1
+    const player2 = this.entityManager.player2 || -1
+    this.checkIfCreaturesAreAttacking(player1)
+    this.checkIfCreaturesAreAttacking(player2, true)
   }
 }
+
+// iterar sobre as criaturas de uma entity
+// (poderia organizar elas por lane e posição mais distante alcançada,
+// assim posso abandonar caso o loop caso uma criatura não alacance um oponente)
+
+// verificar, para cada posição em que há uma criatura da entity "owner",
+// se há uma criatura do oponente.
+// se não houver, passar reto (lembrando que eu poderia parar o loop aqui)
+// se houver, marcar a criatura com status ATTACKING e
+
+// encontrar todas as criaturas que ele pode atacar (calcular range + spread + area) e
+// calcular dano em todas estas criaturas

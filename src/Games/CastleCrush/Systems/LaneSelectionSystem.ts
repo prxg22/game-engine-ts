@@ -3,18 +3,18 @@ import CardDescriptor from '../Components/CardDescriptor'
 import Hand from '../Components/Hand'
 import { LaneReference } from '../Components/LanePosition'
 import LaneSelection, {
-  LANE_SELECTION_STATUS
+  LANE_SELECTION_STATUS,
 } from '../Components/LaneSelection'
 import Mana from '../Components/Mana'
 import MouseInput from '../Components/MouseInput'
-import { LANES, LANE_DISPLAY_SIZE, LANE_SIZE } from '../constants'
-import BaseSystem from './BaseSystem'
+import { LANES, LANE_DISPLAY_SIZE, LANE_SIZE, P1_TAG } from '../constants'
+import BaseSystem from '../Core/BaseSystem'
 
 export default class LaneSelectionSystem extends BaseSystem {
   constructor(
     entityManager: EntityManager,
     gameObjectFactory: Phaser.GameObjects.GameObjectFactory,
-    inputPlugin: Phaser.Input.InputPlugin
+    inputPlugin: Phaser.Input.InputPlugin,
   ) {
     super(entityManager, gameObjectFactory, inputPlugin)
   }
@@ -22,7 +22,7 @@ export default class LaneSelectionSystem extends BaseSystem {
   selectLane(player: Entity, laneReference: LaneReference) {
     const laneSelection = this.entityManager.getComponentOfClass(
       LaneSelection,
-      player
+      player,
     ) as LaneSelection
     if (!laneSelection) return
 
@@ -35,7 +35,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     const mana = this.entityManager.getComponentOfClass(Mana, player) as Mana
     const descriptor = this.entityManager.getComponentOfClass(
       CardDescriptor,
-      selectedCard
+      selectedCard,
     ) as CardDescriptor
 
     if (!mana || !descriptor) return false
@@ -54,13 +54,13 @@ export default class LaneSelectionSystem extends BaseSystem {
     for (let lane = 0; lane < LANES; lane++) {
       const mouse = this.entityManager.getComponentOfClass(
         MouseInput,
-        `lane-${lane}`
+        `lane-${lane}`,
       ) as MouseInput
       const [baseWidth] = LANE_DISPLAY_SIZE
       if (mouse.x < 0 && mouse.y < 0) continue
       return {
         lane,
-        position: Math.round((mouse.x * LANE_SIZE) / baseWidth)
+        position: Math.round((mouse.x * LANE_SIZE) / baseWidth),
       }
     }
   }
@@ -73,11 +73,11 @@ export default class LaneSelectionSystem extends BaseSystem {
   }
 
   update(dt: number) {
-    const player1 = this.entityManager.getEntityByTag('player1') || -1
+    const player1 = this.entityManager.player1 || -1
 
     const laneSelection = this.entityManager.getComponentOfClass(
       LaneSelection,
-      player1
+      player1,
     ) as LaneSelection
 
     // refresh lane selection
@@ -98,7 +98,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     // verificar se a entidade tem mana suficiente
     const hasEnoughMana = this.checkIfPlayerHasEnoughMana(
       player1,
-      selectedCard || -1
+      selectedCard || -1,
     )
 
     if (!hasEnoughMana) {

@@ -18,6 +18,8 @@ export const BACKCOVER_CARD_COLOR = 0xe76f51
 export const SELECTED_CARD_COLOR = 0xf4a261
 
 // players
+export const P1_TAG = 'plyaer1'
+export const P2_TAG = 'plyaer2'
 export const P1_CARD_SIZE = [32, 64]
 export const P1_HAND_DISPLAY_ORIGIN = [192, 504]
 export const P2_CARD_SIZE = [24, 48]
@@ -33,6 +35,7 @@ export const LANE_COLOR = 0xe9c46a
 export const CREATURE_COLOR_MOVING = 0x000000
 export const CREATURE_COLOR_ATTACKING = 0xff0000
 
+// colors
 export const P1_CREATURE_COLOR_MOVING = 0x0110a0
 export const P1_CREATURE_COLOR_ATTACKING = 0xff900f
 export const P2_CREATURE_COLOR_MOVING = 0x0fda23

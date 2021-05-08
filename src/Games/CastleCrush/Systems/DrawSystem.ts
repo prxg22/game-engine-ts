@@ -1,5 +1,5 @@
 import Deck from '../Components/Deck'
-import BaseSystem from './BaseSystem'
+import BaseSystem from '../Core/BaseSystem'
 
 class DrawSystem extends BaseSystem {
   create() {

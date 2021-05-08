@@ -6,19 +6,17 @@ import {
   CANVAS_WIDTH,
   FRAME_COLOR,
   P2_HAND_DISPLAY_ORIGIN,
-  P1_HAND_DISPLAY_ORIGIN
+  P1_HAND_DISPLAY_ORIGIN,
 } from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
-import AttackSystem from '../Systems/AttackSystem'
 import MouseInputSystem from '../Systems/MouseInputSystem'
-import Hand from '../Components/Hand'
 import ManaSystem from '../Systems/ManaSystem'
 import LaneSelectionSystem from '../Systems/LaneSelectionSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
-import BaseScene from './BaseScene'
+import BaseScene from '../Core/BaseScene'
 
 export default class MainScene extends BaseScene {
   factory?: Factory
@@ -46,7 +44,7 @@ export default class MainScene extends BaseScene {
       new HandSystem(this.entityManager, this.add, this.input),
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
-      new LaneMovementSystem(this.entityManager, this.add, this.input)
+      new LaneMovementSystem(this.entityManager, this.add, this.input),
       // new AttackSystem(this.entityManager, this.add, this.input)
     ]
 
