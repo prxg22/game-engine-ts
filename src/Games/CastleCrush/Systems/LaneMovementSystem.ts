@@ -27,13 +27,9 @@ import BaseSystem from '../Core/BaseSystem'
 
 export default class LaneMovementSystem extends BaseSystem {
   moveCreatures(owner: Entity) {
-    const isPlayer1 = this.entityManager.isPlayer1(owner)
-    const playerCreatures = this.entityManager.getComponentOfClass(
-      CreatureCollection,
-      owner,
-    ) as CreatureCollection
+    const creatures = this.entityManager.getPlayerCreatures(owner)
 
-    playerCreatures.entities.forEach(creature => {
+    creatures.forEach(creature => {
       const creatureAttributes = this.entityManager.getComponentOfClass(
         CreatureAttributes,
         creature,
@@ -47,10 +43,7 @@ export default class LaneMovementSystem extends BaseSystem {
         creature,
       ) as LanePosition
 
-      if (creatureAttributes.status === CREATURE_STATUS.MOVING && isPlayer1)
-        lanePosition.position += creatureAttributes.speed
-      else if (creatureAttributes.status === CREATURE_STATUS.MOVING)
-        lanePosition.position -= creatureAttributes.speed
+      lanePosition.position += creatureAttributes.speed
 
       lanePosition.position = Math.max(
         0,
@@ -70,17 +63,13 @@ export default class LaneMovementSystem extends BaseSystem {
     const player1: Entity = this.entityManager.player1 || -1
     const player2: Entity = this.entityManager.player2 || -1
 
-    ;[player1, player2].forEach(entity => {
-      const isPlayer1 = this.entityManager.isPlayer1(entity)
+    ;[player1, player2].forEach(player => {
+      const isPlayer1 = this.entityManager.isPlayer1(player)
       const creatureCollection = this.entityManager.getComponentOfClass(
         CreatureCollection,
-        entity,
+        player,
       ) as CreatureCollection
 
-      let msg = `
-        LaneMovementySystem.render:
-        creatureCollection: ${creatureCollection.entities}
-        `
       creatureCollection.entities.forEach(creature => {
         const lanePosition = this.entityManager.getComponentOfClass(
           LanePosition,
@@ -103,13 +92,7 @@ export default class LaneMovementSystem extends BaseSystem {
         ) as Health
 
         if (!lanePosition) return
-        msg += `
-            -- creature ${creature} --
-            name: ${creatureAttributes.name} - hp: ${health.current}/${health.max} - status: ${creatureAttributes.status}
-            lane: ${lanePosition.lane} - position: ${lanePosition.position}
-            sprite: {x: ${sprite.x}, y: ${sprite.y}}
 
-          `
         if (creatureAttributes.status === CREATURE_STATUS.ATACKING) {
           sprite.setFillStyle(
             isPlayer1
@@ -125,7 +108,10 @@ export default class LaneMovementSystem extends BaseSystem {
         )
 
         const [displayX = 0, displayY] =
-          LaneMovementSystem.calculateDisplayPosition(lanePosition) || []
+          LaneMovementSystem.calculateDisplayPosition(
+            lanePosition,
+            isPlayer1,
+          ) || []
 
         const dx =
           (dt / CLOCK) * creatureAttributes.speed * (isPlayer1 ? 1 : -1)
@@ -152,11 +138,15 @@ export default class LaneMovementSystem extends BaseSystem {
 
   static calculateDisplayPosition(
     lanePosition: LanePosition,
+    isPlayer1: boolean,
   ): [number, number] | undefined {
     const [baseX, baseY] = LANE_DISPLAY_ORIGIN
     const [baseWidth, baseHeight] = LANE_DISPLAY_SIZE
 
-    const displayX = baseX + (lanePosition.position * baseWidth) / LANE_SIZE
+    const position = isPlayer1
+      ? lanePosition.position
+      : LANE_SIZE - lanePosition.position
+    const displayX = baseX + (position * baseWidth) / LANE_SIZE
     const displayY =
       baseY +
       (baseHeight / 2 - CREATURE_SIZE / 2) -

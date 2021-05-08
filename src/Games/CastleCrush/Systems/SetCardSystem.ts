@@ -47,6 +47,7 @@ export default class SetCardSystem extends BaseSystem {
     renderer.sprite.destroy()
     hand.remove(card)
     const creature = this.factory?.creature(
+      player,
       card,
       laneReference.lane,
       laneReference.position,

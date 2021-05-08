@@ -124,12 +124,10 @@ export default class Factory {
 
     // create a creature
     const creature = this.creature(
+      owner,
       card,
       Phaser.Math.Between(0, 2),
-      Phaser.Math.Between(
-        isPlayer1 ? 0 : LANE_SIZE / 2,
-        isPlayer1 ? LANE_SIZE / 2 : LANE_SIZE,
-      ),
+      Phaser.Math.Between(0, LANE_SIZE / 2),
     )
 
     // push creature in owner's creatureCollection
@@ -219,7 +217,12 @@ export default class Factory {
     return card
   }
 
-  creature(card: Entity, lane: number, position: number = 0): Entity {
+  creature(
+    owner: Entity,
+    card: Entity,
+    lane: number,
+    position: number = 0,
+  ): Entity {
     const creature = this.entityManager.createEntity()
     const descriptor = this.entityManager.getComponentOfClass(
       CardDescriptor,
@@ -248,7 +251,10 @@ export default class Factory {
     this.entityManager.addComponent(lanePosition, creature)
 
     const [displayX, displayY] =
-      LaneMovementSystem.calculateDisplayPosition(lanePosition) || []
+      LaneMovementSystem.calculateDisplayPosition(
+        lanePosition,
+        this.entityManager.isPlayer1(owner),
+      ) || []
 
     const sprite = this.factory.rectangle(
       displayX,
