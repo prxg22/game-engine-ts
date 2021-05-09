@@ -67,21 +67,13 @@ export default class Factory {
     // deck cards
     const cards = [
       'creature-1',
+      'creature-2',
       'creature-1',
-      'creature-1',
-      'creature-1',
+      'creature-2',
       'creature-1',
     ]
 
     // hand responsive area
-    const [width, height] = P1_CARD_SIZE
-    const handCardAreas = getHandCardsPositions().map(([x, y]) => ({
-      x,
-      y,
-      width,
-      height,
-    }))
-
     this.entityManager.addComponent(new Mana(1, 0), player)
     this.entityManager.addComponent(new Health(1000), player)
     this.entityManager.addComponent(new Deck(cards), player)
@@ -127,7 +119,7 @@ export default class Factory {
     ) as CreatureCollection
 
     // create random cards
-    const card = this.card(`creature-1`, owner, 0)
+    const card = this.card(`creature-2`, owner, 0)
 
     // create a creature
     const creature = this.creature(

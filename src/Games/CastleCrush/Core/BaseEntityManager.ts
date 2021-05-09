@@ -1,6 +1,7 @@
 import { Entity, EntityManager } from '../../../Core'
 import Attack from '../Components/Attack'
 import CreatureCollection from '../Components/CreatureCollection'
+import Health from '../Components/Health'
 import LanePosition from '../Components/LanePosition'
 import { LANE_SIZE, P1_TAG, P2_TAG } from '../constants'
 
@@ -13,6 +14,15 @@ export default class BaseEntityManager extends EntityManager {
     return this.getEntityByTag(P2_TAG) || -1
   }
 
+  get winner(): Entity {
+    const health1 = this.getComponentOfClass(Health, this.player1) as Health
+    const health2 = this.getComponentOfClass(Health, this.player2) as Health
+
+    if (!health2.current) return this.player1
+    if (!health1.current) return this.player2
+
+    return -1
+  }
   isPlayer1(player: Entity): boolean {
     return this.getEntityByTag(P1_TAG) === player
   }

@@ -1,5 +1,5 @@
 import { GameObjects } from 'phaser'
-import { CANVAS_WIDTH } from '../constants'
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants'
 import Factory from '../Factory'
 import DrawSystem from '../Systems/DrawSystem'
 import HandSystem from '../Systems/HandSystem'
@@ -47,6 +47,24 @@ export default class MainScene extends BaseScene {
 
     super.create()
     // debug text object
-    this.setTextPosition(CANVAS_WIDTH + 16, 16)
+
+    this.text = this.add
+      .text(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, '', {
+        fontSize: '60px',
+      })
+      .setVisible(false)
+  }
+
+  update(time: number, dt: number) {
+    const winner = this.entityManager.winner
+    if (winner > -1) {
+      this.text
+        ?.setVisible(true)
+        .setText(
+          `YOU ${winner === this.entityManager.player1 ? 'WIN' : 'LOOSE'}`,
+        )
+      return
+    }
+    super.update(time, dt)
   }
 }

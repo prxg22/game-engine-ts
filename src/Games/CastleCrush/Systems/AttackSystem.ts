@@ -1,14 +1,14 @@
+import { GameObjects } from 'phaser'
 import { Entity, System } from '../../../Core'
 import Attack from '../Components/Attack'
 import CreatureAttributes, {
   CREATURE_STATUS,
 } from '../Components/CreatureAttributes'
-import CreatureCollection from '../Components/CreatureCollection'
 import Health from '../Components/Health'
 import LanePosition from '../Components/LanePosition'
+import Renderer from '../Components/Renderer'
 import { LANE_SIZE, CLOCK, P1_TAG, P2_TAG, LANES } from '../constants'
 import BaseSystem from '../Core/BaseSystem'
-import MainScene from '../Scenes/MainScene'
 
 export default class AtackSystem extends BaseSystem {
   hitCreature(hit: number, creatures: Entity[]) {
@@ -43,14 +43,15 @@ export default class AtackSystem extends BaseSystem {
       creature,
     ) as CreatureAttributes
 
+    const attackPosition = lanePosition.position + attack.range
     const opponentsOnRange = this.entityManager.getOpponentCreaturesOnRange(
       owner,
       lanePosition.lane,
       lanePosition.position,
-      lanePosition.position + attack.range,
+      attackPosition,
     )
 
-    if (lanePosition.position + attack.range >= LANE_SIZE)
+    if (attackPosition >= LANE_SIZE)
       opponentsOnRange.push([this.entityManager.getOpponent(owner)])
 
     creatureAttributes.status =
@@ -69,7 +70,7 @@ export default class AtackSystem extends BaseSystem {
     const player1 = this.entityManager.player1
     const player2 = this.entityManager.player2
 
-    const creaturesAttacking = [player1, player2].map(player => {
+    ;[player1, player2].forEach(player => {
       for (let lane = 0; lane < LANES; lane++) {
         const creatures = this.entityManager.getPlayerCreaturesOnLaneSortedByRange(
           player,

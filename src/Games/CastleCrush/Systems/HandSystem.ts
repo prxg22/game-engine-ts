@@ -20,6 +20,8 @@ import {
 import MainScene from '../Scenes/MainScene'
 import BaseSystem from '../Core/BaseSystem'
 import LaneSelectionSystem from './LaneSelectionSystem'
+import { GameObjects } from 'phaser'
+import CardDescriptor from '../Components/CardDescriptor'
 
 export default class HandSystem extends BaseSystem {
   draw(entity: Entity, deck: Deck, hand: Hand) {
@@ -85,11 +87,20 @@ export default class HandSystem extends BaseSystem {
         entity,
       ) as Hand
 
+      const descriptions: GameObjects.Text[] = []
       player1Hand.cards.forEach((card, index) => {
+        descriptions.forEach(m => m.setVisible(false))
+        const cardDescriptor = this.entityManager.getComponentOfClass(
+          CardDescriptor,
+          card,
+        ) as CardDescriptor
         const renderer = this.entityManager.getComponentOfClass(
           Renderer,
           card,
         ) as Renderer<Phaser.GameObjects.Shape>
+
+        // if (isPlayer1 && !descriptions[index])
+        //   descriptions[index] = this.gameObjectFactory.text(0, 0, '')
 
         const displayOrigin = isPlayer1
           ? P1_HAND_DISPLAY_ORIGIN
@@ -98,12 +109,15 @@ export default class HandSystem extends BaseSystem {
         const color = isPlayer1 ? FRONTCOVER_CARD_COLOR : BACKCOVER_CARD_COLOR
 
         const [handOriginX, handOriginY] = displayOrigin
-        const [width] = cardSize
+        const [width, height] = cardSize
+        const x = index * width * 2 + handOriginX
 
-        renderer.sprite.setPosition(
-          index * width * 2 + handOriginX,
-          handOriginY,
-        )
+        if (isPlayer1 && descriptions[index])
+          descriptions[index]
+            ?.setText(`${cardDescriptor.id}\n${cardDescriptor.name}`)
+            .setPosition(x, handOriginY + height)
+
+        renderer.sprite.setPosition(x, handOriginY)
 
         if (player1Hand.selected === card)
           renderer.sprite.setFillStyle(SELECTED_CARD_COLOR)

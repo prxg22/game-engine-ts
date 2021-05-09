@@ -19,8 +19,13 @@ export default class HealthSystem extends BaseSystem {
       Renderer,
       creature,
     ) as Renderer<Phaser.GameObjects.Shape>
+    const health = this.entityManager.getComponentOfClass(
+      Health,
+      creature,
+    ) as Health
     renderer.sprite.destroy()
     creatureCollection.remove(creature)
+    this.texts[health.id]?.destroy()
     this.entityManager.removeEntity(creature)
   }
 
@@ -29,7 +34,7 @@ export default class HealthSystem extends BaseSystem {
       .getPlayerCreatures(player)
       .forEach(creatures => this.removeCreature(player, creatures))
 
-    this.entityManager.removeEntity(player)
+    // this.entityManager.removeEntity(player)
   }
 
   clock(dt: number) {
@@ -55,28 +60,52 @@ export default class HealthSystem extends BaseSystem {
 
       if (health.current) return
 
+      this.render()
       this.removePlayer(player)
     })
   }
 
-  texts: Phaser.GameObjects.Text[] = []
+  texts: { [key: number]: Phaser.GameObjects.Text } = []
+
   render() {
     const players = [this.entityManager.player1, this.entityManager.player2]
 
-    players.forEach((player, i) => {
+    const healthEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
+      [Health],
+    )
+
+    healthEntities.forEach((entity, i) => {
       const health = this.entityManager.getComponentOfClass(
         Health,
-        player,
+        entity,
       ) as Health
 
-      const isPlayer1 = this.entityManager.isPlayer1(player)
+      const renderer = this.entityManager.getComponentOfClass(
+        Renderer,
+        entity,
+      ) as Renderer<Phaser.GameObjects.Shape>
+
+      if (renderer) {
+        this.texts[health.id] = (
+          this.texts[health.id] ||
+          this.gameObjectFactory.text(0, 0, 'health.toString()', {
+            fontSize: '11px',
+          })
+        )
+          .setText(health.toString())
+          .setPosition(renderer.sprite.x, renderer.sprite.y - 16)
+
+        return
+      }
+
+      const isPlayer1 = this.entityManager.isPlayer1(entity)
       const [displayX, displayY] = isPlayer1
         ? P1_HAND_DISPLAY_ORIGIN
         : P2_HAND_DISPLAY_ORIGIN
 
       const [x, y] = [displayX - HEALTH_DISPLAY_OFFSET, displayY]
-      this.texts[i] = this.texts[i]
-        ? this.texts[i].setText(health.toString())
+      this.texts[health.id] = this.texts[health.id]
+        ? this.texts[health.id].setText(health.toString())
         : this.gameObjectFactory.text(x, y, health.toString())
     })
   }

@@ -1,5 +1,5 @@
 // clock
-export const CLOCK = 400
+export const CLOCK = 800
 
 // canvas
 export const CANVAS_WIDTH = 800
@@ -31,7 +31,7 @@ export const P2_HAND_DISPLAY_ORIGIN = [192, 32]
 // lane
 export const LANES = 3
 export const LANE_DISPLAY_ORIGIN = [50, 384]
-export const LANE_SIZE = 100
+export const LANE_SIZE = 88
 export const LANE_DISPLAY_SIZE = [704, 60]
 export const LANE_MARGIN_SIZE = 0
 export const LANE_COLOR = 0xe9c46a

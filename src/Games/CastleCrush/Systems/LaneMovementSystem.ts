@@ -88,11 +88,6 @@ export default class LaneMovementSystem extends BaseSystem {
           creature,
         ) as Renderer<GameObjects.Shape>
 
-        const health = this.entityManager.getComponentOfClass(
-          Health,
-          creature,
-        ) as Health
-
         if (!lanePosition) return
 
         if (creatureAttributes.status === CREATURE_STATUS.ATACKING) {
