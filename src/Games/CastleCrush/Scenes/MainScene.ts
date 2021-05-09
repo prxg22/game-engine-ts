@@ -11,6 +11,7 @@ import AttackSystem from '../Systems/AttackSystem'
 import HealthSystem from '../Systems/HealthSystem'
 import SetCardSystem from '../Systems/SetCardSystem'
 import BaseScene from '../Core/BaseScene'
+import OpponentSystem from '../Systems/OpponentSystem'
 
 export default class MainScene extends BaseScene {
   factory?: Factory
@@ -41,6 +42,7 @@ export default class MainScene extends BaseScene {
       new AttackSystem(this.entityManager, this.add, this.input),
       new LaneMovementSystem(this.entityManager, this.add, this.input),
       new HealthSystem(this.entityManager, this.add, this.input),
+      new OpponentSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()

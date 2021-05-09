@@ -1,5 +1,5 @@
 // clock
-export const CLOCK = 800
+export const CLOCK = 400
 
 // canvas
 export const CANVAS_WIDTH = 800
@@ -35,10 +35,11 @@ export const LANE_SIZE = 100
 export const LANE_DISPLAY_SIZE = [704, 60]
 export const LANE_MARGIN_SIZE = 0
 export const LANE_COLOR = 0xe9c46a
-export const CREATURE_COLOR_MOVING = 0x000000
-export const CREATURE_COLOR_ATTACKING = 0xff0000
 
 // colors
+export const LANE_SELECT_COLOR = 0x009900
+export const CREATURE_COLOR_MOVING = 0x000000
+export const CREATURE_COLOR_ATTACKING = 0xff0000
 export const P1_CREATURE_COLOR_MOVING = 0x0110a0
 export const P1_CREATURE_COLOR_ATTACKING = 0xff900f
 export const P2_CREATURE_COLOR_MOVING = 0x0fda23

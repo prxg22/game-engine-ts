@@ -1,7 +1,7 @@
 import { GameObjects } from 'phaser'
 import { Entity, EntityManager, System } from '../../../Core'
 import MainScene from '../../LunaLander/Scenes/MainScene'
-import { LANE_SELECT_COLOR } from '../../Snake/constants'
+import { LANE_SELECT_COLOR } from '../constants'
 import CardDescriptor from '../Components/CardDescriptor'
 import Hand from '../Components/Hand'
 import LanePosition, { LaneReference } from '../Components/LanePosition'
@@ -15,23 +15,13 @@ import {
   LANES,
   LANE_DISPLAY_ORIGIN,
   LANE_DISPLAY_SIZE,
-  LANE_MARGIN_SIZE,
   LANE_SIZE,
-  P1_TAG,
 } from '../constants'
 import BaseSystem from '../Core/BaseSystem'
 import LaneMovementSystem from './LaneMovementSystem'
 
 let msg = ''
 export default class LaneSelectionSystem extends BaseSystem {
-  constructor(
-    entityManager: EntityManager,
-    gameObjectFactory: Phaser.GameObjects.GameObjectFactory,
-    inputPlugin: Phaser.Input.InputPlugin,
-  ) {
-    super(entityManager, gameObjectFactory, inputPlugin)
-  }
-
   getMaxValidPosition(player: Entity, lane: number) {
     const furthestPlayerCreature = this.entityManager.getPlayerFurthestCreature(
       player,
@@ -169,6 +159,7 @@ export default class LaneSelectionSystem extends BaseSystem {
     const hand = this.entityManager.getComponentOfClass(Hand, player1) as Hand
 
     // MainScene.instance.debug(msg)
+    msg = `selected: ${hand.selected > -1}`
     this.laneSelectionShapes.forEach(s => s.setVisible(hand.selected > -1))
     if (!hand.selected) return
 
@@ -189,7 +180,7 @@ export default class LaneSelectionSystem extends BaseSystem {
             maxX - CREATURE_SIZE,
             baseHeight,
             LANE_SELECT_COLOR,
-            0.8,
+            0.5,
           )
           .setDisplayOrigin(0, 0)
 

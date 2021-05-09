@@ -39,6 +39,7 @@ import MouseInputSystem from '../Systems/MouseInputSystem'
 import LaneMovementSystem from '../Systems/LaneMovementSystem'
 import Attack, { AttackDescriptor } from '../Components/Attack'
 import BaseEntityManager from '../Core/BaseEntityManager'
+import Input from '../Components/Input'
 
 let instance: Factory
 export default class Factory {
@@ -87,6 +88,12 @@ export default class Factory {
     this.entityManager.addComponent(new Hand(), player)
     this.entityManager.addComponent(new LaneSelection(), player)
     this.entityManager.addComponent(new CreatureCollection(), player)
+    this.entityManager.addComponent(
+      new Input([
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+      ]),
+      player,
+    )
 
     return player
   }

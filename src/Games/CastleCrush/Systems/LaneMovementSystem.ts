@@ -126,19 +126,17 @@ export default class LaneMovementSystem extends BaseSystem {
         )
           return
 
-        const operation = isPlayer1 ? 'min' : 'max'
+        const x = Math.max(0, sprite.x + dx)
 
-        const x = Math.max(0, Math[operation](sprite.x + dx, displayX))
+        // const msg = `${creature}\nx:${
+        //   isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
+        // }`
 
-        const msg = `${creature}\nx:${
-          isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
-        }`
-
-        this.positionText[creature] = this.positionText[creature]
-          ? this.positionText[creature].setPosition(x, displayY).setText(msg)
-          : this.gameObjectFactory.text(x, displayY, msg, {
-              fontSize: '11px',
-            })
+        // this.positionText[creature] = this.positionText[creature]
+        //   ? this.positionText[creature].setPosition(x, displayY).setText(msg)
+        //   : this.gameObjectFactory.text(x, displayY, msg, {
+        //       fontSize: '11px',
+        //     })
 
         sprite.setPosition(x, displayY)
       })
@@ -156,6 +154,7 @@ export default class LaneMovementSystem extends BaseSystem {
       ? lanePosition.position
       : LANE_SIZE - lanePosition.position
     const displayX = baseX + (position * baseWidth) / LANE_SIZE - CREATURE_SIZE
+
     const displayY =
       baseY +
       (baseHeight / 2 - CREATURE_SIZE / 2) -
