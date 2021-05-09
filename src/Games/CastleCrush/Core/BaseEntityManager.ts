@@ -120,4 +120,34 @@ export default class BaseEntityManager extends EntityManager {
 
     return creaturesOnRange
   }
+
+  getPlayerFurthestCreatureOnLane(player: Entity, lane: number): Entity {
+    const creatures = this.getPlayerCreaturesOnLaneSortedByPosition(
+      player,
+      lane,
+    )
+    if (!creatures.length) return -1
+
+    return creatures[0]
+  }
+
+  getPlayerFurthestCreature(player: Entity): Entity {
+    let furthest = -1
+    let furthestPosition = -1
+    for (let lane = 0; lane < LANE_SIZE; lane++) {
+      const creature = this.getPlayerFurthestCreatureOnLane(player, lane)
+
+      const lanePosition = this.getComponentOfClass(
+        LanePosition,
+        creature,
+      ) as LanePosition
+
+      if (creature > 0 && lanePosition.position > furthestPosition) {
+        furthest = creature
+        furthestPosition = lanePosition.position
+      }
+    }
+
+    return furthest
+  }
 }

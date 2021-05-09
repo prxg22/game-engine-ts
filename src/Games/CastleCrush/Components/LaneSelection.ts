@@ -6,6 +6,7 @@ export enum LANE_SELECTION_STATUS {
   SET,
   NO_CARD_SELECTED_ERROR,
   NOT_ENOUGH_MANA_ERROR,
+  INVALID_LANE_REFERENCE,
 }
 
 export default class LaneSelection extends Component implements LaneReference {

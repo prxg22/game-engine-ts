@@ -24,11 +24,11 @@ export default class MainScene extends BaseScene {
     this.factory.lanes()
 
     // mock oponents creatures
-    Array(Phaser.Math.Between(2, 6))
-      .fill(0)
-      .forEach(() => {
-        this.factory?.mockCreature(player2)
-      })
+    // Array(Phaser.Math.Between(2, 6))
+    //   .fill(0)
+    //   .forEach(() => {
+    this.factory?.mockCreature(player2)
+    //   })
 
     // boot systems
     this.systems = [
