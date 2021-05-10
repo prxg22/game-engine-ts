@@ -27,7 +27,6 @@ import {
   LANE_COLOR,
   LANES,
   CREATURE_SIZE,
-  CREATURE_COLOR_MOVING,
   LANE_SIZE,
   P1_CREATURE_COLOR_MOVING,
   P2_CREATURE_COLOR_MOVING,
@@ -82,7 +81,7 @@ export default class Factory {
 
     // hand responsive area
     this.entityManager.addComponent(new Mana(1, 0), player)
-    this.entityManager.addComponent(new Health(1000), player)
+    this.entityManager.addComponent(new Health(100000), player)
     this.entityManager.addComponent(new Deck(cards), player)
     this.entityManager.addComponent(new Hand(), player)
     this.entityManager.addComponent(new LaneSelection(), player)
@@ -109,7 +108,7 @@ export default class Factory {
     ]
 
     this.entityManager.addComponent(new Mana(1, 0), player)
-    this.entityManager.addComponent(new Health(1000), player)
+    this.entityManager.addComponent(new Health(100000), player)
     this.entityManager.addComponent(new Deck(cards), player)
     this.entityManager.addComponent(new Hand(), player)
     const creatureCollection = new CreatureCollection()

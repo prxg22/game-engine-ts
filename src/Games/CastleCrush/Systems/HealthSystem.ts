@@ -1,4 +1,5 @@
 import { Entity } from '../../../Core'
+import MainScene from '../../LunaLander/Scenes/MainScene'
 import Attack from '../Components/Attack'
 import CreatureAttributes, {
   CREATURE_STATUS,
@@ -72,13 +73,14 @@ export default class HealthSystem extends BaseSystem {
     })
   }
 
-  texts: { [key: number]: Phaser.GameObjects.Text } = []
+  texts = new Map<number, Phaser.GameObjects.Text>()
 
+  msg = ''
   render() {
     const healthEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Health],
     )
-
+    this.msg = ''
     healthEntities.forEach(entity => {
       const isPlayer1 = this.entityManager.isPlayer1(entity)
       const creatureAttributes = this.entityManager.getComponentOfClass(
@@ -106,38 +108,46 @@ export default class HealthSystem extends BaseSystem {
         entity,
       ) as Attack
 
-      if (renderer) {
-        const msg = `${creatureAttributes.name}\nhp:${health.toString()}\nx:${
-          lanePosition.position
-        }\npwr: ${attack.power}\nrng: ${attack.range}\nar: ${
-          attack.area
-        }\nspr:${attack.spread}`
+      // if (renderer) {
+      //   const msg = `${creatureAttributes.name}\nhp:${health.toString()}\nx:${
+      //     lanePosition.position
+      //   }\npwr: ${attack.power}\nrng: ${attack.range}\nar: ${
+      //     attack.area
+      //   }\nspr:${attack.spread}`
 
-        this.texts[health.id] = (
-          this.texts[health.id] ||
-          this.gameObjectFactory.text(0, 0, '', {
-            fontSize: '11px',
-            color: '#FFD447',
-          })
-        )
-          .setText(msg)
-          .setPosition(
-            renderer.sprite.x - CREATURE_SIZE,
-            renderer.sprite.y + CREATURE_SIZE + CREATURE_SIZE / 2,
-          )
+      //   this.texts[health.id] = (
+      //     this.texts[health.id] ||
+      //     this.gameObjectFactory.text(0, 0, '', {
+      //       fontSize: '11px',
+      //       color: '#FFD447',
+      //     })
+      //   )
+      //     .setText(msg)
+      //     .setPosition(
+      //       renderer.sprite.x - CREATURE_SIZE,
+      //       renderer.sprite.y + CREATURE_SIZE + CREATURE_SIZE / 2,
+      //     )
 
-        return
-      }
+      //   return
+      // }
+
+      if (renderer) return
+      this.msg += `${this.texts}`
 
       const [displayX, displayY] = isPlayer1
         ? P1_HAND_DISPLAY_ORIGIN
         : P2_HAND_DISPLAY_ORIGIN
 
       const [x, y] = [displayX - HEALTH_DISPLAY_OFFSET, displayY]
-      this.texts[health.id] = (
-        this.texts[health.id] ||
-        this.gameObjectFactory.text(x, y, health.toString())
-      ).setText(health.toString())
+      this.texts.set(
+        health.id,
+        (
+          this.texts.get(health.id) ||
+          this.gameObjectFactory.text(x, y, health.toString())
+        ).setText(health.toString()),
+      )
     })
+
+    MainScene.instance.debug(this.msg)
   }
 }

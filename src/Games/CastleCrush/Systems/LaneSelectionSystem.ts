@@ -36,16 +36,18 @@ export default class LaneSelectionSystem extends BaseSystem {
         LanePosition,
         furthestPlayerCreature,
       ) as LanePosition)?.position || 10
+
     const furthestOpponentCreaturePosition =
       (this.entityManager.getComponentOfClass(
         LanePosition,
         furthestOpponentCreatureOnLane,
       ) as LanePosition)?.position || -1
 
+    const measureError = 20 * CREATURE_SIZE
     return Math.min(
-      furthestPlayerCreaturePosition,
+      furthestPlayerCreaturePosition - measureError,
       LANE_SIZE / 2,
-      LANE_SIZE - furthestOpponentCreaturePosition,
+      LANE_SIZE - furthestOpponentCreaturePosition - measureError,
     )
   }
 
@@ -97,7 +99,10 @@ export default class LaneSelectionSystem extends BaseSystem {
       if (mouse.x < 0 && mouse.y < 0) continue
       return {
         lane,
-        position: Math.round((mouse.x * LANE_SIZE) / baseWidth),
+        position: Math.min(
+          Math.round((mouse.x * LANE_SIZE) / baseWidth),
+          this.getMaxValidPosition(this.entityManager.player1, lane),
+        ),
       }
     }
   }
@@ -125,11 +130,11 @@ export default class LaneSelectionSystem extends BaseSystem {
     const laneReference = this.getLaneReferenceIfItWasClicked()
     if (!laneReference) return
 
-    // checa se a laneReference é válida para esta carta
-    if (!this.isValidLaneReference(player1, laneReference)) {
-      laneSelection.status = LANE_SELECTION_STATUS.INVALID_LANE_REFERENCE
-      return
-    }
+    // // checa se a laneReference é válida para esta carta
+    // if (!this.isValidLaneReference(player1, laneReference)) {
+    //   laneSelection.status = LANE_SELECTION_STATUS.INVALID_LANE_REFERENCE
+    //   return
+    // }
 
     // verifica se naquela entidade tem uma carta selcionada na mao
     const selectedCard = this.getSelectedCardFromHand(player1)
