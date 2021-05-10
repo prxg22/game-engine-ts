@@ -17,7 +17,7 @@ class DrawSystem extends BaseSystem {
     })
   }
 
-  clock() {
+  update() {
     const entitiesWithHandAndDeck = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Deck],
     )

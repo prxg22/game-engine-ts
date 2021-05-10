@@ -67,10 +67,17 @@ export default class Factory {
     // deck cards
     const cards = [
       'creature-1',
-      'creature-2',
       'creature-1',
-      'creature-2',
       'creature-1',
+      'creature-1',
+      'creature-3',
+      'creature-2',
+      'creature-3',
+      'creature-2',
+      'creature-4',
+      'creature-4',
+      'creature-2',
+      'creature-4',
     ]
 
     // hand responsive area
@@ -119,7 +126,7 @@ export default class Factory {
     ) as CreatureCollection
 
     // create random cards
-    const card = this.card(`creature-2`, owner, 0)
+    const card = this.card(`creature-${Phaser.Math.Between(1, 4)}`, owner, 0)
 
     // create a creature
     const creature = this.creature(
@@ -179,7 +186,7 @@ export default class Factory {
     return lanes
   }
 
-  card(name: string, owner: Entity, handPosition: number): Entity {
+  card(file: string, owner: Entity, handPosition: number): Entity {
     const isPlayer1 = this.entityManager.isPlayer1(owner)
 
     const card = this.entityManager.createEntity()
@@ -199,9 +206,11 @@ export default class Factory {
     this.entityManager.addComponent(renderer, card)
 
     // card descriptor
-    const { type, manaCost }: { type: CARD_TYPE; manaCost: number } = CARDS[
-      name
-    ]
+    const {
+      name,
+      type,
+      manaCost,
+    }: { name: string; type: CARD_TYPE; manaCost: number } = CARDS[file]
     this.entityManager.addComponent(
       new CardDescriptor(name, manaCost, type),
       card,
@@ -260,7 +269,6 @@ export default class Factory {
       displayY,
       CREATURE_SIZE,
       CREATURE_SIZE,
-      CREATURE_COLOR_MOVING,
     )
 
     this.entityManager.addComponent(new Renderer(sprite), creature)

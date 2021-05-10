@@ -22,6 +22,7 @@ import BaseSystem from '../Core/BaseSystem'
 import LaneSelectionSystem from './LaneSelectionSystem'
 import { GameObjects } from 'phaser'
 import CardDescriptor from '../Components/CardDescriptor'
+import Mana from '../Components/Mana'
 
 export default class HandSystem extends BaseSystem {
   draw(entity: Entity, deck: Deck, hand: Hand) {
@@ -74,22 +75,19 @@ export default class HandSystem extends BaseSystem {
     })
   }
 
+  descriptions: GameObjects.Text[] = []
   render() {
     const handEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Hand],
     )
+    this.descriptions.forEach(m => m.setVisible(false))
 
     handEntities.forEach(entity => {
       const isPlayer1 = this.entityManager.isPlayer1(entity)
 
-      const player1Hand = this.entityManager.getComponentOfClass(
-        Hand,
-        entity,
-      ) as Hand
+      const hand = this.entityManager.getComponentOfClass(Hand, entity) as Hand
 
-      const descriptions: GameObjects.Text[] = []
-      player1Hand.cards.forEach((card, index) => {
-        descriptions.forEach(m => m.setVisible(false))
+      hand.cards.forEach((card, index) => {
         const cardDescriptor = this.entityManager.getComponentOfClass(
           CardDescriptor,
           card,
@@ -98,10 +96,6 @@ export default class HandSystem extends BaseSystem {
           Renderer,
           card,
         ) as Renderer<Phaser.GameObjects.Shape>
-
-        // if (isPlayer1 && !descriptions[index])
-        //   descriptions[index] = this.gameObjectFactory.text(0, 0, '')
-
         const displayOrigin = isPlayer1
           ? P1_HAND_DISPLAY_ORIGIN
           : P2_HAND_DISPLAY_ORIGIN
@@ -112,16 +106,28 @@ export default class HandSystem extends BaseSystem {
         const [width, height] = cardSize
         const x = index * width * 2 + handOriginX
 
-        if (isPlayer1 && descriptions[index])
-          descriptions[index]
-            ?.setText(`${cardDescriptor.id}\n${cardDescriptor.name}`)
-            .setPosition(x, handOriginY + height)
-
         renderer.sprite.setPosition(x, handOriginY)
 
-        if (player1Hand.selected === card)
+        if (hand.selected === card)
           renderer.sprite.setFillStyle(SELECTED_CARD_COLOR)
         else renderer.sprite.setFillStyle(color)
+
+        if (!isPlayer1) return
+        const mana = this.entityManager.getComponentOfClass(
+          Mana,
+          entity,
+        ) as Mana
+        renderer.sprite.setAlpha(
+          1 + (mana.current - cardDescriptor.manaCost) * 0.3,
+        )
+
+        this.descriptions[cardDescriptor.id] = (
+          this.descriptions[cardDescriptor.id] ||
+          this.gameObjectFactory.text(0, 0, '', { fontSize: '10px' })
+        )
+          .setText(`${cardDescriptor.name}\n${cardDescriptor.manaCost}`)
+          .setPosition(x - width / 2, handOriginY + height)
+          .setVisible(true)
       })
     })
   }

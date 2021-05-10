@@ -11,10 +11,10 @@ export const init = () => {
     // width: CANVAS_WIDTH + 300,
     // height: CANVAS_HEIGHT + 800,
     physics: {
-      default: 'arcade'
+      default: 'arcade',
     },
-    backgroundColor: '#000',
-    scene: MainScene
+    backgroundColor: '#277DA1',
+    scene: MainScene,
   })
 }
 

@@ -10,35 +10,27 @@ import {
 import BaseSystem from '../Core/BaseSystem'
 
 class ManaSystem extends BaseSystem {
-  countTicks: number = 0
   text?: Phaser.GameObjects.Text
+  speed: number = 100
 
   create() {
     const [x, y] = P1_HAND_DISPLAY_ORIGIN
-    const [w, h] = P1_CARD_SIZE
+    const [, h] = P1_CARD_SIZE
     this.text = this.gameObjectFactory.text(x - 64, y + h / 2, '', {
       color: `#888800`,
     })
   }
 
-  clock(dt: number) {
+  update(dt: number) {
     const players = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [Mana],
     )
 
-    this.countTicks += 1
-    if (this.countTicks < 4) return
-    this.countTicks += 0
-
     players.forEach(player => {
       const mana = this.entityManager.getComponentOfClass(Mana, player) as Mana
-
-      if (!mana) return
-
-      mana.increment()
-      if (!(this.countTicks % 4)) mana.incrementMax()
+      mana.increment(this.speed * 1 + Math.floor(mana.max / 100))
+      mana.incrementMax(1)
     })
-    this.countTicks = 0
   }
 
   render() {
@@ -46,7 +38,9 @@ class ManaSystem extends BaseSystem {
       Mana,
       this.entityManager.player1 || -1,
     ) as Mana
-    this.text?.setText(`${mana.current}/${mana.max}`)
+    this.text?.setText(
+      `${Math.floor(mana.current / 100)}/${Math.floor(mana.max / 100)}`,
+    )
   }
 }
 

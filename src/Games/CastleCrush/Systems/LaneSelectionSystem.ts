@@ -35,12 +35,12 @@ export default class LaneSelectionSystem extends BaseSystem {
       (this.entityManager.getComponentOfClass(
         LanePosition,
         furthestPlayerCreature,
-      ) as LanePosition)?.position || 1
+      ) as LanePosition)?.position || 10
     const furthestOpponentCreaturePosition =
       (this.entityManager.getComponentOfClass(
         LanePosition,
         furthestOpponentCreatureOnLane,
-      ) as LanePosition)?.position || 1
+      ) as LanePosition)?.position || -1
 
     return Math.min(
       furthestPlayerCreaturePosition,
@@ -180,9 +180,9 @@ export default class LaneSelectionSystem extends BaseSystem {
             maxX - CREATURE_SIZE,
             baseHeight,
             LANE_SELECT_COLOR,
-            0.5,
           )
           .setDisplayOrigin(0, 0)
+          .setAlpha(0.2)
 
       this.laneSelectionShapes[lane].setDisplaySize(
         maxX - CREATURE_SIZE * 2,

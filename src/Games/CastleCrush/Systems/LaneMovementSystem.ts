@@ -52,7 +52,7 @@ export default class LaneMovementSystem extends BaseSystem {
     })
   }
 
-  clock() {
+  update() {
     const player1 = this.entityManager.player1 || -1
     const player2 = this.entityManager.player2 || -1
     this.moveCreatures(player1)
@@ -90,19 +90,16 @@ export default class LaneMovementSystem extends BaseSystem {
 
         if (!lanePosition) return
 
-        if (creatureAttributes.status === CREATURE_STATUS.ATACKING) {
+        sprite.setFillStyle(
+          isPlayer1 ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING,
+        )
+
+        if (creatureAttributes.status === CREATURE_STATUS.ATACKING)
           sprite.setFillStyle(
             isPlayer1
               ? P1_CREATURE_COLOR_ATTACKING
               : P2_CREATURE_COLOR_ATTACKING,
           )
-
-          return
-        }
-
-        sprite.setFillStyle(
-          isPlayer1 ? P1_CREATURE_COLOR_MOVING : P2_CREATURE_COLOR_MOVING,
-        )
 
         const [displayX = 0, displayY] =
           LaneMovementSystem.calculateDisplayPosition(
@@ -110,30 +107,20 @@ export default class LaneMovementSystem extends BaseSystem {
             isPlayer1,
           ) || []
 
-        const dx =
-          (dt / CLOCK) * creatureAttributes.speed * (isPlayer1 ? 1 : -1)
+        // const dx =
+        //   (dt / CLOCK) * creatureAttributes.speed * (isPlayer1 ? 1 : -1)
 
-        if (
-          !displayX ||
-          !displayY ||
-          (isPlayer1 && sprite.x >= displayX) ||
-          (!isPlayer1 && sprite.x <= displayX)
-        )
-          return
+        // if (
+        //   !displayX ||
+        //   !displayY ||
+        //   (isPlayer1 && sprite.x >= displayX) ||
+        //   (!isPlayer1 && sprite.x <= displayX)
+        // )
+        //   return
 
-        const x = Math.max(0, sprite.x + dx)
+        // const x = Math.max(0, sprite.x + dx)
 
-        // const msg = `${creature}\nx:${
-        //   isPlayer1 ? lanePosition.position : LANE_SIZE - lanePosition.position
-        // }`
-
-        // this.positionText[creature] = this.positionText[creature]
-        //   ? this.positionText[creature].setPosition(x, displayY).setText(msg)
-        //   : this.gameObjectFactory.text(x, displayY, msg, {
-        //       fontSize: '11px',
-        //     })
-
-        sprite.setPosition(x, displayY)
+        sprite.setPosition(displayX, displayY)
       })
     })
   }
@@ -148,7 +135,8 @@ export default class LaneMovementSystem extends BaseSystem {
     const position = isPlayer1
       ? lanePosition.position
       : LANE_SIZE - lanePosition.position
-    const displayX = baseX + (position * baseWidth) / LANE_SIZE - CREATURE_SIZE
+
+    const displayX = baseX + (position * baseWidth) / LANE_SIZE
 
     const displayY =
       baseY +

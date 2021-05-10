@@ -2,7 +2,7 @@ import Input from '../Components/Input'
 import BaseSystem from '../Core/BaseSystem'
 
 export default class OpponentSystem extends BaseSystem {
-  clock() {
+  update() {
     const input = this.entityManager.getComponentOfClass(
       Input,
       this.entityManager.player1,

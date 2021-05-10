@@ -1,5 +1,6 @@
 import { GameObjects } from 'phaser'
 import { Entity, System } from '../../../Core'
+import MainScene from '../../LunaLander/Scenes/MainScene'
 import Attack from '../Components/Attack'
 import CreatureAttributes, {
   CREATURE_STATUS,
@@ -23,7 +24,9 @@ export default class AtackSystem extends BaseSystem {
   }
 
   resolveDamage(attack: Attack, opponentsOnRange: Entity[][]) {
-    let targets = opponentsOnRange.slice(0, attack.spread + 1).flat()
+    let targets = opponentsOnRange
+      .slice(0, attack.spread ? attack.range : 1)
+      .flat()
     if (!attack.area) targets = [targets[0]]
 
     this.hitCreature(attack.power, targets)
@@ -43,7 +46,8 @@ export default class AtackSystem extends BaseSystem {
       creature,
     ) as CreatureAttributes
 
-    const attackPosition = lanePosition.position + attack.range
+    const attackPosition =
+      creatureAttributes.speed + lanePosition.position + attack.range
     const opponentsOnRange = this.entityManager.getOpponentCreaturesOnRange(
       owner,
       lanePosition.lane,
@@ -66,7 +70,7 @@ export default class AtackSystem extends BaseSystem {
     }
   }
 
-  clock() {
+  update() {
     const player1 = this.entityManager.player1
     const player2 = this.entityManager.player2
 

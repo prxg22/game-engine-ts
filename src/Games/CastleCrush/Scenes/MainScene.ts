@@ -16,7 +16,7 @@ import OpponentSystem from '../Systems/OpponentSystem'
 export default class MainScene extends BaseScene {
   factory?: Factory
   text?: GameObjects.Text
-
+  winnerText?: GameObjects.Text
   create() {
     // create entities
     this.factory = new Factory(this.entityManager, this.add, this.input)
@@ -39,16 +39,18 @@ export default class MainScene extends BaseScene {
       new HandSystem(this.entityManager, this.add, this.input),
       new LaneSelectionSystem(this.entityManager, this.add, this.input),
       new SetCardSystem(this.entityManager, this.add, this.input),
-      new AttackSystem(this.entityManager, this.add, this.input),
       new LaneMovementSystem(this.entityManager, this.add, this.input),
+      new AttackSystem(this.entityManager, this.add, this.input),
       new HealthSystem(this.entityManager, this.add, this.input),
       new OpponentSystem(this.entityManager, this.add, this.input),
     ]
 
     super.create()
     // debug text object
+    this.setTextPosition(CANVAS_WIDTH + 16, 16)
 
-    this.text = this.add
+    // winnerText
+    this.winnerText = this.add
       .text(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, '', {
         fontSize: '60px',
       })
@@ -58,7 +60,7 @@ export default class MainScene extends BaseScene {
   update(time: number, dt: number) {
     const winner = this.entityManager.winner
     if (winner > -1) {
-      this.text
+      this.winnerText
         ?.setVisible(true)
         .setText(
           `YOU ${winner === this.entityManager.player1 ? 'WIN' : 'LOOSE'}`,
@@ -66,5 +68,9 @@ export default class MainScene extends BaseScene {
       return
     }
     super.update(time, dt)
+  }
+
+  render() {
+    this.debugEntities([this.entityManager.player1, this.entityManager.player2])
   }
 }

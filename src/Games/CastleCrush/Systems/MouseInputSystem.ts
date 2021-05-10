@@ -5,8 +5,6 @@ import Renderer from '../Components/Renderer'
 import BaseSystem from '../Core/BaseSystem'
 
 export default class MouseInputSystem extends BaseSystem {
-  update() {}
-
   create() {
     const mouseInputAndRendererEntities = this.entityManager.getAllEntitiesPosessingComponentOfClasses(
       [MouseInput, Renderer],
