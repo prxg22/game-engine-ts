@@ -1,8 +1,0 @@
-{
-  "name": "creature-2",
-  "manaCost": 200,
-  "type": "CREATURE",
-  "speed": 2,
-  "hp": 10000,
-  "attack": { "power": 200, "range": 300 }
-}

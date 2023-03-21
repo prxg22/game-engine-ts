@@ -1,5 +1,8 @@
 {
-  "exclude": ["dist/"],
+  "exclude": [
+    "dist/"
+  ],
+  "baseUrl": ".",
   "compilerOptions": {
     "target": "ES2019",
     "strict": true,
@@ -8,9 +11,19 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "allowJs": true,
-    "lib": ["ESNext", "dom"],
-    "rootDir": "src",
-    "moduleResolution": "node",
-    "resolveJsonModule": true
-  }
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
+    "rootDir": "lib",
+  },
+  "moduleResolution": "node",
+  "resolveJsonModule": true,
+  "types": [
+    "vite/client"
+  ],
+  "include": [
+    "lib/**/*.ts",
+    "game/**/*.ts",
+  ]
 }
